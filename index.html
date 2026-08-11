@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steady — An Anxiety Symptoms &amp; Solutions Companion</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#425842">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E4DED2;
+    --bg-deep:#DAD3C4;
+    --card:#F5F1E7;
+    --card-warm:#EFE6DA;
+    --ink:#2B2430;
+    --ink-soft:#615A67;
+    --sage:#5C7A5E;
+    --sage-deep:#425842;
+    --sage-soft:#AEC2AC;
+    --gold:#C99A44;
+    --rose:#BE6E76;
+    --line: rgba(43,36,48,0.14);
+    --shadow: 0 16px 40px rgba(43,36,48,0.09);
+    --shadow-sm: 0 6px 16px rgba(43,36,48,0.08);
+    --radius: 26px;
+    --radius-sm: 16px;
+    --font-display:'Manrope', -apple-system, sans-serif;
+    --font-body:'Inter', -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 85% -5%, rgba(174,194,172,0.35), transparent 60%),
+      radial-gradient(ellipse 700px 500px at -5% 15%, rgba(201,154,68,0.14), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:var(--font-display);font-weight:500;letter-spacing:-0.01em;}
+  h2{font-size:clamp(1.5rem,3vw,2.1rem);margin:0 0 6px;}
+  .eyebrow{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.14em;color:var(--sage-deep);font-weight:600;margin-bottom:10px;}
+  p{margin:0 0 1em;}
+  .lede{color:var(--ink-soft);font-size:1.02rem;max-width:640px;}
+  button{font-family:var(--font-body);cursor:pointer;}
+  a{color:inherit;}
+  :focus-visible{outline:2.5px solid var(--sage-deep); outline-offset:3px;}
+
+  /* ---------- Layout shells ---------- */
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+  section{padding:74px 0;}
+  .section-head{max-width:640px;margin-bottom:36px;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);
+  }
+
+  /* ---------- Top nav ---------- */
+  nav{
+    position:sticky;top:0;z-index:40;
+    backdrop-filter:blur(10px);
+    background:rgba(228,222,210,0.82);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;gap:16px;}
+  .nav-right{display:flex;align-items:center;gap:10px;}
+  .icon-btn{background:var(--card-warm);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-size:0.78rem;font-weight:600;color:var(--ink);}
+  .icon-btn.on{background:var(--sage-deep);color:#fff;border-color:var(--sage-deep);}
+  .auth-area{display:flex;align-items:center;gap:8px;}
+  .auth-user{display:flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:600;}
+  .auth-user img{width:26px;height:26px;border-radius:50%;}
+  @media (max-width:720px){.nav-right{gap:6px;} .icon-btn{padding:8px 10px;font-size:0;} .icon-btn::before{content:'🔈';font-size:1rem;} .icon-btn.on::before{content:'🔊';}}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:1.2rem;}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--sage);animation:pulse-dot 5.5s ease-in-out infinite;}
+  .navlinks{display:flex;gap:18px;font-size:0.86rem;font-weight:600;color:var(--ink-soft);overflow-x:auto;}
+  .navlink{background:none;border:none;text-decoration:none;padding:6px 2px;border-bottom:2px solid transparent;transition:.2s;color:var(--ink-soft);font-size:0.86rem;font-weight:600;white-space:nowrap;}
+  .navlink:hover{color:var(--ink);border-color:var(--sage);}
+  @media (max-width:720px){.navlinks{gap:14px;} .brand{display:none;}}
+
+  /* ---------- Breathing companion orb (signature element) ---------- */
+  /* ---------------- AUTH GATE ---------------- */
+  #authGate{
+    position:fixed;inset:0;z-index:100;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+    background:
+      radial-gradient(ellipse 900px 500px at 85% -5%, rgba(174,194,172,0.4), transparent 60%),
+      radial-gradient(ellipse 700px 500px at -5% 15%, rgba(201,154,68,0.18), transparent 55%),
+      var(--bg);
+  }
+  .gate-card{
+    max-width:420px;width:100%;text-align:center;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:44px 36px;
+  }
+  .gate-orb{
+    width:74px;height:74px;border-radius:50%;margin:0 auto 22px;
+    background:radial-gradient(circle at 32% 28%, #d7e6d5, var(--sage) 62%, var(--sage-deep) 100%);
+    animation:pulse-orb 11s ease-in-out infinite;
+    box-shadow:0 14px 30px rgba(66,88,66,0.3);
+  }
+  .gate-title{font-size:2.2rem;margin:0 0 10px;}
+  .gate-sub{color:var(--ink-soft);font-size:0.95rem;margin-bottom:30px;}
+  .gate-google-btn{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+    background:#fff;color:#2B2430;border:1.5px solid var(--line);
+  }
+  .gate-google-btn:hover{border-color:var(--sage-soft);}
+  .gate-note{font-size:0.8rem;color:var(--ink-soft);margin-top:18px;line-height:1.5;}
+  .gate-warning{
+    background:var(--card-warm);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;font-size:0.85rem;color:var(--ink-soft);text-align:left;margin-bottom:16px;
+  }
+  .gate-warning code{background:rgba(43,36,48,0.08);padding:1px 6px;border-radius:6px;font-size:0.82em;}
+
+  #companion{
+    position:fixed;right:22px;bottom:22px;z-index:50;
+    width:78px;height:78px;border-radius:50%;
+    border:none;padding:0;
+    background:radial-gradient(circle at 35% 30%, #cfe0cd, var(--sage) 68%, var(--sage-deep));
+    box-shadow:0 10px 30px rgba(66,88,66,0.4);
+    animation:pulse-orb 11s ease-in-out infinite;
+    display:flex;align-items:center;justify-content:center;
+  }
+  #companion span{color:#fff;font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-align:center;line-height:1.2;opacity:0.95;}
+  @keyframes pulse-orb{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.16);}
+  }
+  @keyframes pulse-dot{
+    0%,100%{opacity:0.55;transform:scale(1);}
+    50%{opacity:1;transform:scale(1.3);}
+  }
+  #reassure{
+    position:fixed;right:22px;bottom:110px;z-index:50;
+    background:var(--ink);color:#F5F1E7;padding:10px 16px;border-radius:14px;
+    font-size:0.85rem;max-width:220px;box-shadow:var(--shadow);
+    opacity:0;pointer-events:none;transform:translateY(6px);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  #reassure.show{opacity:1;transform:translateY(0);}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:88px 0 60px;}
+  .hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:center;}
+  @media (max-width:840px){.hero-grid{grid-template-columns:1fr;}}
+  .hero h1{font-size:clamp(2.3rem,5vw,3.4rem);line-height:1.06;margin:0 0 20px;}
+  .hero h1 em{font-style:normal;font-weight:800;color:var(--sage-deep);}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;}
+  .btn{
+    border:none;border-radius:999px;padding:14px 26px;font-weight:600;font-size:0.95rem;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:var(--sage-deep);color:#F5F1E7;box-shadow:0 10px 24px rgba(66,88,66,0.28);}
+  .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--sage-deep);}
+  .btn-rose{background:var(--rose);color:#fff;box-shadow:0 10px 24px rgba(190,110,118,0.32);}
+  .btn-sm{padding:9px 16px;font-size:0.82rem;border-radius:999px;}
+
+  .hero-orb-wrap{display:flex;align-items:center;justify-content:center;position:relative;}
+  .hero-orb{
+    width:230px;height:230px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #d7e6d5, var(--sage) 62%, var(--sage-deep) 100%);
+    animation:pulse-orb 11s ease-in-out infinite;
+    box-shadow:0 30px 60px rgba(66,88,66,0.35);
+  }
+  .hero-orb-label{position:absolute;text-align:center;color:#fff;font-family:var(--font-display);font-size:1.05rem;font-weight:700;}
+
+  /* ---------- Symptom chips ---------- */
+  .chip-grid{display:flex;flex-wrap:wrap;gap:10px;}
+  .chip{
+    background:var(--card);border:1.5px solid var(--line);border-radius:999px;
+    padding:10px 18px;font-size:0.88rem;font-weight:500;color:var(--ink);
+    transition:.18s ease;
+  }
+  .chip:hover{border-color:var(--sage-soft);}
+  .chip.selected{background:var(--sage-deep);color:#F5F1E7;border-color:var(--sage-deep);}
+  .symptom-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    margin-top:22px;padding-top:20px;border-top:1px dashed var(--line);
+  }
+  .symptom-bar .muted{color:var(--ink-soft);font-size:0.88rem;}
+  .linkbtn{background:none;border:none;color:var(--sage-deep);font-weight:700;font-size:0.86rem;text-decoration:underline;padding:6px 0;cursor:pointer;}
+  .next-row{margin-top:26px;padding-top:18px;border-top:1px dashed var(--line);text-align:right;}
+
+  /* ---------- Toolkit grid ---------- */
+  .toolkit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;}
+  .tool-card{
+    padding:22px 20px;position:relative;overflow:hidden;
+    transition:.2s ease;cursor:pointer;
+  }
+  .tool-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+  .tool-card.dim{opacity:0.45;}
+  .tool-card.match{border-color:var(--sage-deep);box-shadow:0 0 0 2px var(--sage-soft) inset;}
+  .badge{
+    position:absolute;top:16px;right:16px;background:var(--gold);color:#2B2430;
+    font-size:0.68rem;font-weight:700;padding:4px 10px;border-radius:999px;letter-spacing:0.03em;
+  }
+  .tool-card .ticon{font-size:1.6rem;margin-bottom:10px;display:block;}
+  .tool-card h3{font-size:1.08rem;margin:0 0 6px;}
+  .tool-card p{font-size:0.86rem;color:var(--ink-soft);margin:0;}
+
+  /* ---------- Tool detail panels ---------- */
+  .tool-panel{margin-top:56px;padding:36px;}
+  .tool-panel h3{font-size:1.4rem;margin-bottom:4px;}
+  .panel-sub{color:var(--ink-soft);font-size:0.92rem;margin-bottom:26px;}
+
+  /* Breathing */
+  .breathe-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;}
+  .pattern-btn{background:var(--card-warm);border:1.5px solid var(--line);border-radius:14px;padding:10px 16px;font-size:0.85rem;font-weight:600;}
+  .pattern-btn.active{background:var(--sage-deep);color:#fff;border-color:var(--sage-deep);}
+  .breathe-stage{display:flex;flex-direction:column;align-items:center;gap:22px;padding:20px 0;}
+  .breathe-orb{
+    width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #d7e6d5, var(--sage) 62%, var(--sage-deep) 100%);
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    transition:transform 1s linear;
+    box-shadow:0 20px 40px rgba(66,88,66,0.3);
+  }
+  .breathe-orb .phase-label{font-family:var(--font-display);font-size:1.25rem;font-weight:700;}
+  .breathe-orb .phase-count{font-size:2rem;font-weight:700;font-family:var(--font-body);}
+  .breathe-meta{color:var(--ink-soft);font-size:0.88rem;}
+
+  /* Grounding */
+  .ground-step{display:none;}
+  .ground-step.active{display:block;}
+  .ground-title{font-size:1.15rem;margin-bottom:14px;}
+  .ground-inputs{display:grid;gap:10px;margin-bottom:20px;}
+  .ground-inputs input{
+    padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--card-warm);
+    font-family:var(--font-body);font-size:0.92rem;color:var(--ink);
+  }
+  .ground-dots{display:flex;gap:8px;margin-bottom:22px;}
+  .ground-dots span{width:9px;height:9px;border-radius:50%;background:var(--line);}
+  .ground-dots span.on{background:var(--sage-deep);}
+  .ground-nav{display:flex;gap:10px;}
+
+  /* PMR & Body scan */
+  .seq-display{text-align:center;padding:26px 0;}
+  .seq-name{font-family:var(--font-display);font-size:1.6rem;margin-bottom:6px;}
+  .seq-instruction{font-size:1rem;color:var(--ink-soft);max-width:440px;margin:0 auto 4px;min-height:48px;}
+  .seq-phase{font-weight:700;letter-spacing:0.05em;text-transform:uppercase;font-size:0.82rem;}
+  .seq-phase.tense{color:var(--rose);}
+  .seq-phase.release{color:var(--sage-deep);}
+  .progress-track{height:8px;background:var(--card-warm);border-radius:99px;overflow:hidden;margin:18px 0;}
+  .progress-fill{height:100%;background:var(--sage-deep);width:0%;transition:width .3s linear;}
+  .seq-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .scan-text{font-size:1.05rem;min-height:56px;text-align:center;max-width:500px;margin:0 auto;transition:opacity .4s;}
+
+  /* Journal & reframe */
+  textarea{
+    width:100%;padding:14px 16px;border-radius:16px;border:1.5px solid var(--line);
+    background:var(--card-warm);font-family:var(--font-body);font-size:0.94rem;color:var(--ink);
+    resize:vertical;min-height:90px;
+  }
+  .prompt-line{font-weight:600;color:var(--sage-deep);font-size:0.9rem;margin-bottom:10px;}
+  .entry-list{margin-top:22px;display:flex;flex-direction:column;gap:12px;}
+  .entry{background:var(--card-warm);border-radius:14px;padding:14px 16px;font-size:0.9rem;position:relative;}
+  .entry .meta{font-size:0.72rem;color:var(--ink-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;}
+  .entry .del{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--ink-soft);font-size:0.85rem;}
+  .distortion-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+  .distortion-chip{background:var(--card-warm);border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;font-size:0.78rem;font-weight:600;}
+  .distortion-chip.on{background:var(--rose);color:#fff;border-color:var(--rose);}
+  .field-label{font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);margin-bottom:8px;display:block;}
+  .hint-text{font-size:0.82rem;color:var(--ink-soft);margin:8px 0 0;}
+
+  /* Sounds */
+  .sound-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+  .sound-btn{background:var(--card-warm);border:1.5px solid var(--line);border-radius:14px;padding:14px 20px;font-weight:600;font-size:0.9rem;display:flex;align-items:center;gap:8px;}
+  .sound-btn.active{background:var(--sage-deep);color:#fff;border-color:var(--sage-deep);}
+  .vol-row{display:flex;align-items:center;gap:12px;margin-top:20px;}
+  input[type=range]{accent-color:var(--sage-deep);width:200px;}
+
+  /* Mood tracker */
+  .mood-slider-row{display:flex;align-items:center;gap:18px;margin-bottom:18px;}
+  .mood-readout{font-family:var(--font-display);font-size:1.4rem;min-width:120px;}
+  .chart{display:flex;align-items:flex-end;gap:6px;height:120px;margin-top:26px;padding-top:10px;border-top:1px dashed var(--line);}
+  .bar{flex:1;min-width:6px;background:linear-gradient(180deg,var(--gold),var(--rose));border-radius:6px 6px 0 0;transition:height .3s;}
+  .mood-stats{display:flex;gap:26px;margin-top:14px;font-size:0.85rem;color:var(--ink-soft);}
+
+  /* Movement */
+  .move-list{display:grid;gap:10px;margin-bottom:20px;}
+  .move-list li{list-style:none;background:var(--card-warm);border-radius:12px;padding:12px 16px;font-size:0.9rem;}
+  .timer-big{font-family:var(--font-display);font-size:2.6rem;text-align:center;margin:10px 0;}
+
+  footer{padding:56px 0 90px;border-top:1px solid var(--line);}
+  .footer-note{max-width:680px;background:var(--card);border-radius:20px;padding:24px 26px;font-size:0.88rem;color:var(--ink-soft);}
+  .footer-note strong{color:var(--ink);}
+  .badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;margin-top:24px;padding-top:22px;border-top:1px dashed var(--line);}
+  .badge-tile{text-align:center;padding:14px 8px;border-radius:16px;background:var(--card-warm);border:1.5px solid var(--line);opacity:0.45;transition:.2s;}
+  .badge-tile.earned{opacity:1;border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,154,68,0.25) inset;}
+  .badge-tile .bicon{font-size:1.6rem;display:block;margin-bottom:4px;}
+  .badge-tile .blabel{font-size:0.72rem;font-weight:700;}
+  #badgeToast{
+    position:fixed;left:50%;top:24px;transform:translateX(-50%) translateY(-20px);z-index:60;
+    background:var(--ink);color:#F5F1E7;padding:12px 22px;border-radius:14px;font-size:0.88rem;font-weight:600;
+    box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.4s ease;
+  }
+  #badgeToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .patterns-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px;}
+  @media (max-width:720px){.patterns-grid{grid-template-columns:1fr;}}
+  .pattern-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:0.88rem;}
+  .pattern-row .pbar{height:8px;background:var(--sage-soft);border-radius:4px;}
+  .pattern-row .pname{width:150px;flex-shrink:0;}
+  .pattern-row .pcount{width:24px;text-align:right;color:var(--ink-soft);font-size:0.78rem;}
+  #printSummary{display:none;}
+  @media print{
+    body *{visibility:hidden;}
+    #printSummary, #printSummary *{visibility:visible;}
+    #printSummary{display:block;position:absolute;top:0;left:0;width:100%;padding:30px;color:#111;}
+    #printSummary h1{font-size:1.6rem;} #printSummary h2{font-size:1.1rem;margin-top:22px;}
+  }
+
+  ::selection{background:var(--sage-soft);}
+  @media (prefers-reduced-motion: reduce){
+    #companion,.hero-orb,.gate-orb,.brand .dot{animation:none;}
+    .breathe-orb{transition:none;}
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<!-- AUTH GATE — shown until the person signs in. This is the first thing anyone sees. -->
+<div id="authGate">
+  <div class="gate-card">
+    <div class="gate-orb"></div>
+    <div class="eyebrow">Welcome to</div>
+    <h1 class="gate-title">Steady</h1>
+    <p class="gate-sub">A companion for anxious moments — breathing, grounding, and a few other things that help.</p>
+    <div id="gateSignedOut">
+      <button type="button" class="btn btn-primary gate-google-btn" onclick="handleSignInClick()">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.98v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.03l2.97-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.97L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+      <p class="gate-note">Signing in creates your Steady account and saves your check-ins, mood log, and reframes securely — nothing here works without it, so nothing gets lost either.</p>
+    </div>
+    <div id="gateNotConfigured" style="display:none;">
+      <div class="gate-warning">Sign-in isn't connected yet. This app needs a Firebase project's keys pasted into <code>index.html</code> before anyone can sign in — see <strong>DEPLOYMENT.md</strong> for the exact steps.</div>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="devBypassGate()">Continue without an account (developer preview only)</button>
+    </div>
+    <div id="gateSigningIn" style="display:none;">
+      <p class="gate-note">Opening Google sign-in…</p>
+    </div>
+  </div>
+</div>
+
+<div id="appMain" style="display:none;">
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> Steady</div>
+    <div class="navlinks">
+      <button type="button" class="navlink" onclick="goToSection('symptoms')">Symptoms</button>
+      <button type="button" class="navlink" onclick="goToSection('toolkit')">Toolkit</button>
+      <button type="button" class="navlink" onclick="goToSection('tracker')">Mood</button>
+      <button type="button" class="navlink" onclick="goToSection('sounds-section')">Sounds</button>
+    </div>
+    <div class="nav-right">
+      <button type="button" class="icon-btn" id="voiceToggleBtn" onclick="toggleVoice()" title="Toggle spoken guidance">🔈 Voice</button>
+      <button type="button" class="icon-btn" id="bgmToggleBtn" onclick="toggleBgmQuick()" title="Toggle background music">🎵 Music</button>
+      <div id="authArea" class="auth-area"></div>
+      <button type="button" class="btn btn-rose btn-sm" onclick="panicMode()">I need this to stop</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Signature breathing companion, fixed -->
+<button type="button" id="companion" onclick="panicMode()" aria-label="Start a calming breath">
+  <span>BREATHE<br>WITH ME</span>
+</button>
+<div id="reassure">You're safe right now. This feeling is real, but it will pass. Let's breathe together.</div>
+<div id="badgeToast"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">A companion for anxious moments</div>
+      <h1>Name what your body<br>is telling you. <em>Then answer it.</em></h1>
+      <p class="lede">Steady turns the old "Symptoms &amp; Solutions" worksheet into something you can actually use in the moment — pick what you're feeling, get matched techniques, and walk through them step by step, right here.</p>
+      <div class="hero-actions">
+        <button type="button" class="btn btn-primary" onclick="goToSection('symptoms')">Find my symptoms</button>
+        <button type="button" class="btn btn-ghost" onclick="goToSection('breathing')">Just breathe with me</button>
+      </div>
+    </div>
+    <div class="hero-orb-wrap">
+      <div class="hero-orb"></div>
+      <div class="hero-orb-label">in... and out</div>
+    </div>
+  </div>
+</section>
+
+<!-- STREAKS & BADGES -->
+<section id="streaks" style="padding-top:0;">
+  <div class="wrap">
+    <div class="card" style="padding:28px 30px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:18px;">
+        <div>
+          <div class="eyebrow">Your check-ins</div>
+          <h3 id="streakHeadline" style="margin:0 0 6px;font-size:1.3rem;">No check-ins yet</h3>
+          <p class="hint-text" id="streakSub" style="margin:0;">Complete any technique below and it counts — there's no penalty for a quiet day.</p>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:2.2rem;line-height:1;" id="streakFlame">🌱</div>
+          <div class="hint-text" id="streakLongest">Longest streak: 0 days</div>
+        </div>
+      </div>
+      <div class="badge-grid" id="badgeGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SYMPTOMS -->
+<section id="symptoms">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Step one</div>
+      <h2>What are you noticing right now?</h2>
+      <p class="lede">Tap everything that applies — there's no wrong answer, and you can change your mind anytime.</p>
+    </div>
+    <div class="chip-grid" id="symptomGrid"></div>
+    <div class="symptom-bar">
+      <span class="muted" id="selectedCount">Nothing selected yet — that's okay too.</span>
+      <button type="button" class="linkbtn" onclick="clearSymptoms()">Clear selections</button>
+    </div>
+    <div style="margin-top:22px;">
+      <button type="button" class="btn btn-primary" onclick="goToSection('toolkit')">See my toolkit ↓</button>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLKIT -->
+<section id="toolkit" style="background:var(--bg-deep);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Step two</div>
+      <h2>Your toolkit</h2>
+      <p class="lede">These are matched to what you selected above. No selections yet? Browse all eight — every one is worth knowing.</p>
+    </div>
+    <div class="toolkit-grid" id="toolkitGrid"></div>
+  </div>
+</section>
+
+<!-- BREATHING -->
+<section id="breathing">
+  <div class="wrap">
+    <div class="card tool-panel">
+      <div class="eyebrow">Technique</div>
+      <h3>Guided breathing</h3>
+      <p class="panel-sub">Slowing your exhale tells your nervous system the danger has passed. Pick a pattern and follow the orb.</p>
+      <div class="breathe-row" id="patternRow"></div>
+      <div class="breathe-stage">
+        <div class="breathe-orb" id="breatheOrb">
+          <div style="text-align:center;">
+            <div class="phase-label" id="phaseLabel">Ready</div>
+            <div class="phase-count" id="phaseCount">–</div>
+          </div>
+        </div>
+        <div class="breathe-meta" id="breatheMeta">0 cycles completed this session</div>
+        <div style="display:flex;gap:10px;">
+          <button type="button" class="btn btn-primary btn-sm" id="breatheToggle" onclick="toggleBreathing()">Start</button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="resetBreathing()">Reset</button>
+        </div>
+      </div>
+      <div class="next-row"><button type="button" class="linkbtn" onclick="goToSection('grounding')">Next: 5-4-3-2-1 grounding →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- GROUNDING -->
+<section id="grounding" style="background:var(--bg-deep);">
+  <div class="wrap">
+    <div class="card tool-panel">
+      <div class="eyebrow">Technique</div>
+      <h3>5-4-3-2-1 grounding</h3>
+      <p class="panel-sub">Walk through your senses to pull your attention out of your head and into the room.</p>
+      <div class="ground-dots" id="groundDots"></div>
+      <div id="groundSteps"></div>
+      <div class="ground-nav">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="groundStep(-1)">Back</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="groundStep(1)" id="groundNextBtn">Next</button>
+      </div>
+      <div class="next-row"><button type="button" class="linkbtn" onclick="goToSection('pmr')">Next: Progressive muscle relaxation →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- PMR -->
+<section id="pmr">
+  <div class="wrap">
+    <div class="card tool-panel">
+      <div class="eyebrow">Technique</div>
+      <h3>Progressive muscle relaxation</h3>
+      <p class="panel-sub">Ten muscle groups, one at a time. With voice guidance on, we'll read the instruction first — then give you a quiet 5-second count to actually tense, and a longer count to release. With voice off, it's a steady 5 seconds tense, 8 seconds release throughout.</p>
+      <div class="seq-display">
+        <div class="seq-phase" id="pmrPhase">TENSE</div>
+        <div class="seq-name" id="pmrName">Hands &amp; forearms</div>
+        <div class="seq-instruction" id="pmrInstruction">Make tight fists with both hands and squeeze hard.</div>
+        <div class="progress-track"><div class="progress-fill" id="pmrFill"></div></div>
+        <div class="seq-controls">
+          <button type="button" class="btn btn-primary btn-sm" id="pmrToggle" onclick="togglePmr()">Start</button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="resetPmr()">Reset</button>
+        </div>
+      </div>
+      <div class="next-row"><button type="button" class="linkbtn" onclick="goToSection('bodyscan')">Next: Body scan →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- BODY SCAN -->
+<section id="bodyscan" style="background:var(--bg-deep);">
+  <div class="wrap">
+    <div class="card tool-panel">
+      <div class="eyebrow">Technique</div>
+      <h3>Body scan</h3>
+      <p class="panel-sub">A slow three-minute sweep of attention, part by part. Nothing to fix — just notice.</p>
+      <div class="scan-text" id="scanText">Press play, get comfortable, and let your attention rest wherever we point it.</div>
+      <div class="progress-track"><div class="progress-fill" id="scanFill"></div></div>
+      <div class="seq-controls">
+        <button type="button" class="btn btn-primary btn-sm" id="scanToggle" onclick="toggleScan()">Start</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="resetScan()">Reset</button>
+      </div>
+      <div class="next-row"><button type="button" class="linkbtn" onclick="goToSection('journal')">Next: Journaling →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- JOURNAL -->
+<section id="journal">
+  <div class="wrap">
+    <div class="card tool-panel">
+      <div class="eyebrow">Technique</div>
+      <h3>Journaling</h3>
+      <p class="panel-sub">Get the anxious thought out of your head and onto the page — it tends to loosen its grip once it's written down.</p>
+      <div class="prompt-line" id="journalPrompt">What's the thought that's loudest right now?</div>
+      <textarea id="journalText" placeholder="Start writing, no need to make it tidy..."></textarea>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="newPrompt()">New prompt</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="saveJournal()">Save entry</button>
+      </div>
+      <div class="entry-list" id="journalEntries"></div>
+      <div class="next-row"><button type="button" class="linkbtn" onclick="goToSection('reframe')">Next: Thought reframe →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- REFRAME -->
+<section id="reframe" style="background:var(--bg-deep);">
+  <div class="wrap">
+    <div class="card tool-panel">
+      <div class="eyebrow">Technique</div>
+      <h3>Thought reframe</h3>
+      <p class="panel-sub">You don't have to talk yourself out of an anxious thought alone. Answer two short prompts below and we'll help you build the reframe.</p>
+      <label class="field-label">1. The anxious thought</label>
+      <textarea id="reframeThought" placeholder="e.g. Everyone at the meeting thought I sounded stupid."></textarea>
+
+      <label class="field-label" style="margin-top:16px;">2. Does it lean on any of these patterns?</label>
+      <div class="distortion-row" id="distortionRow"></div>
+      <p class="hint-text">Not sure? Pick the one that feels closest — or skip this and answer the general questions below.</p>
+
+      <div id="guideBlock" style="margin-top:8px;">
+        <label class="field-label" id="guideQ1Label">3. What would you tell a close friend who had this exact thought?</label>
+        <textarea id="guideA1" placeholder="Write a sentence or two..." style="min-height:60px;"></textarea>
+        <label class="field-label" style="margin-top:14px;" id="guideQ2Label">4. What's the most likely outcome here, not just the worst one?</label>
+        <textarea id="guideA2" placeholder="Write a sentence or two..." style="min-height:60px;"></textarea>
+      </div>
+
+      <button type="button" class="btn btn-ghost btn-sm" style="margin-top:16px;" onclick="buildReframe()">Build my reframe from these answers</button>
+
+      <label class="field-label" style="margin-top:22px;">5. Your reframe — edit it until it feels true, not just positive</label>
+      <textarea id="reframeAnswer" placeholder="Click 'Build my reframe' above, or write your own here."></textarea>
+      <button type="button" class="btn btn-primary btn-sm" style="margin-top:14px;" onclick="saveReframe()">Save reframe</button>
+      <div class="entry-list" id="reframeEntries"></div>
+      <div class="next-row"><button type="button" class="linkbtn" onclick="goToSection('movement')">Next: Movement break →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- MOVEMENT -->
+<section id="movement">
+  <div class="wrap">
+    <div class="card tool-panel">
+      <div class="eyebrow">Technique</div>
+      <h3>Movement break</h3>
+      <p class="panel-sub">Anxiety is energy with nowhere to go. A short burst of movement gives it somewhere to go.</p>
+      <ul class="move-list">
+        <li>🌀 Shake out your hands and arms for 15 seconds, like flicking off water</li>
+        <li>🚶 Walk to the farthest point you can reach in 30 seconds, then walk back</li>
+        <li>🙆 Reach both arms overhead, stretch tall, exhale as you drop them</li>
+        <li>🦶 Press your feet hard into the floor for 5 seconds, then release</li>
+      </ul>
+      <div class="timer-big" id="moveTimer">0:60</div>
+      <div class="seq-controls">
+        <button type="button" class="btn btn-primary btn-sm" id="moveToggle" onclick="toggleMoveTimer()">Start 60s timer</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="resetMoveTimer()">Reset</button>
+      </div>
+      <div class="next-row"><button type="button" class="linkbtn" onclick="goToSection('sounds-section')">Next: Calming sounds →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOUNDS -->
+<section id="sounds-section" style="background:var(--bg-deep);">
+  <div class="wrap">
+    <div class="card tool-panel">
+      <div class="eyebrow">Technique</div>
+      <h3>Calming sounds &amp; background music</h3>
+      <p class="panel-sub">Everything here is generated live in your browser — no audio files, nothing to load. Pick whichever gives your mind somewhere gentle to rest.</p>
+      <div class="sound-row">
+        <button type="button" class="sound-btn" data-sound="pad" onclick="setSound('pad')">🎹 Calm pad</button>
+        <button type="button" class="sound-btn" data-sound="ocean" onclick="setSound('ocean')">🌊 Ocean waves</button>
+        <button type="button" class="sound-btn" data-sound="rain" onclick="setSound('rain')">🌧️ Rain</button>
+        <button type="button" class="sound-btn" data-sound="white" onclick="setSound('white')">🌫️ White noise</button>
+        <button type="button" class="sound-btn" data-sound="off" onclick="setSound('off')">⏸️ Off</button>
+      </div>
+      <div class="vol-row">
+        <span style="font-size:0.85rem;color:var(--ink-soft);">Music volume</span>
+        <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.3" oninput="setVolume(this.value)">
+      </div>
+
+      <div style="margin-top:30px;padding-top:24px;border-top:1px dashed var(--line);">
+        <label class="field-label">Voice guidance</label>
+        <p class="hint-text" style="margin-top:0;">Choose which voice reads the breathing, body scan, and muscle relaxation instructions aloud.</p>
+        <div class="sound-row" style="margin-top:10px;">
+          <button type="button" class="sound-btn gender-btn" data-gender="female" onclick="setVoiceGender('female')">♀ Female voice</button>
+          <button type="button" class="sound-btn gender-btn" data-gender="male" onclick="setVoiceGender('male')">♂ Male voice</button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="previewVoice()">▶ Preview voice</button>
+        </div>
+        <p class="hint-text" style="margin-top:12px;">Available voices depend on your device and browser — Steady picks the most natural-sounding one it can find for the option you choose.</p>
+      </div>
+
+      <div class="next-row"><button type="button" class="linkbtn" onclick="goToSection('tracker')">Next: Check my mood →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRACKER -->
+<section id="tracker">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Along the way</div>
+      <h2>How anxious do you feel, right now?</h2>
+      <p class="lede">Log it before and after a technique — seeing the number move is its own kind of proof.</p>
+    </div>
+    <div class="card" style="padding:30px 32px;">
+      <div class="mood-slider-row">
+        <input type="range" id="moodSlider" min="0" max="10" step="1" value="5" oninput="updateMoodReadout(this.value)" style="flex:1;">
+        <div class="mood-readout" id="moodReadout">😐 5 · moderate</div>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" onclick="logMood()">Log this moment</button>
+      <div class="chart" id="moodChart"></div>
+      <div class="mood-stats" id="moodStats"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PATTERNS -->
+<section id="patterns" style="background:var(--bg-deep);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Over time</div>
+      <h2>Your patterns</h2>
+      <p class="lede">The more you check in, the clearer this gets. Nothing here leaves this page unless you sign in or export it yourself.</p>
+    </div>
+    <div class="card" style="padding:30px 32px;">
+      <div id="patternsEmpty" class="hint-text">Not enough check-ins yet — select a few symptoms or log your mood a couple more times and patterns will start to show up here.</div>
+      <div class="patterns-grid" id="patternsGrid" style="display:none;">
+        <div>
+          <h3 style="font-size:1rem;margin-bottom:14px;">Most-noticed symptoms</h3>
+          <div id="topSymptoms"></div>
+        </div>
+        <div>
+          <h3 style="font-size:1rem;margin-bottom:14px;">When you tend to check in</h3>
+          <div id="timeOfDay"></div>
+        </div>
+      </div>
+      <div style="margin-top:26px;padding-top:20px;border-top:1px dashed var(--line);">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="exportSummary()">📄 Export summary as PDF</button>
+        <p class="hint-text" style="margin-top:10px;">Opens your browser's print dialog — choose "Save as PDF" to download it, or print it to bring to a therapist appointment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="printSummary"></div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-note">
+      <strong>A note on what this is.</strong> Steady is a self-help companion for everyday anxious moments, built from a symptoms-and-solutions worksheet plus widely used, evidence-informed coping techniques. It isn't a diagnosis, treatment, or substitute for care from a therapist or doctor. Your entries sync to your account, so you can pick up where you left off on another device — a local copy is also kept in this browser as a backup. If anxiety is a regular, heavy part of your life, a licensed therapist can help far more than any app — and if you're ever in crisis, please reach out to a crisis line or emergency services in your area right away.
+    </div>
+  </div>
+</footer>
+
+</div><!-- /#appMain -->
+
+<!--
+  FIREBASE (Google sign-in + Firestore sync)
+  ------------------------------------------
+  1. Create a project at https://console.firebase.google.com
+  2. Enable Authentication -> Sign-in method -> Google
+  3. Create a Firestore database (production mode is fine)
+  4. Project settings -> General -> Your apps -> Web app -> copy the config object below
+  5. Paste it in place of the placeholder values. See the deployment guide for full steps.
+-->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const firebaseReady = firebaseConfig.apiKey !== "YOUR_API_KEY";
+  window.steadyFirebaseReady = firebaseReady;
+
+  if (firebaseReady) {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    window.signInGoogle = () => signInWithPopup(auth, provider).catch(e => { alert("Sign-in didn't go through: " + e.message); throw e; });
+    window.signOutGoogle = () => signOut(auth);
+    window.saveCloudState = (uid, data) => setDoc(doc(db, "users", uid), data, { merge: true });
+    window.loadCloudState = async (uid) => {
+      const snap = await getDoc(doc(db, "users", uid));
+      return snap.exists() ? snap.data() : null;
+    };
+    onAuthStateChanged(auth, (user) => { if (window.onSteadyAuthChange) window.onSteadyAuthChange(user); });
+  } else {
+    window.signInGoogle = () => Promise.resolve();
+    window.signOutGoogle = () => { if (window.onSteadyAuthChange) window.onSteadyAuthChange(null); };
+  }
+  if (window.updateGateConfigState) window.updateGateConfigState(firebaseReady);</script>
+
+<script>
+/* ---------------- SHARED STATE THAT MUST EXIST BEFORE ANY INIT CODE RUNS ---------------- */
+let audioCtx=null, currentSound='off', activeAudio=null, bgmTargetVolume=0.3;
+
+/* ---------------- VOICE GUIDANCE (declared first — other code calls speak() during init) ---------------- */
+let voiceEnabled = false;
+try { voiceEnabled = localStorage.getItem('steady_voice')==='1'; } catch(e){}
+let voiceGender = 'female';
+try { voiceGender = localStorage.getItem('steady_voice_gender') || 'female'; } catch(e){}
+let availableVoices = [];
+let chosenVoice = null;
+
+function refreshVoices(){
+  if(!('speechSynthesis' in window)) return;
+  availableVoices = window.speechSynthesis.getVoices() || [];
+  pickVoice();
+  renderVoiceGenderUI();
+}
+if('speechSynthesis' in window){
+  refreshVoices();
+  window.speechSynthesis.onvoiceschanged = refreshVoices;
+}
+
+// Prefer natural-sounding engines (Google/Microsoft/Apple "neural"/"natural" voices)
+// over the flat robotic default that ships on some devices.
+const VOICE_QUALITY_HINTS = ['neural','natural','premium','enhanced','google','online'];
+const FEMALE_NAME_HINTS = ['female','samantha','zira','victoria','susan','karen','moira','tessa','fiona','aria','jenny','emma','ava','salli','joanna'];
+const MALE_NAME_HINTS = ['male','daniel','david','alex','fred','guy','ryan','christopher','eric','mark','tom'];
+
+function scoreVoice(v, gender){
+  const name = v.name.toLowerCase();
+  let score = 0;
+  if(!v.lang || !v.lang.toLowerCase().startsWith('en')) score -= 50;
+  if(VOICE_QUALITY_HINTS.some(h=>name.includes(h))) score += 10;
+  const hints = gender==='male' ? MALE_NAME_HINTS : FEMALE_NAME_HINTS;
+  if(hints.some(h=>name.includes(h))) score += 20;
+  if(v.localService===false) score += 3; // cloud voices tend to sound more natural
+  return score;
+}
+function pickVoice(){
+  if(!availableVoices.length){ chosenVoice=null; return; }
+  const ranked = [...availableVoices].sort((a,b)=>scoreVoice(b,voiceGender)-scoreVoice(a,voiceGender));
+  chosenVoice = ranked[0] || null;
+}
+function setVoiceGender(g){
+  voiceGender = g;
+  try{ localStorage.setItem('steady_voice_gender', g); }catch(e){}
+  pickVoice();
+  renderVoiceGenderUI();
+  previewVoice();
+}
+function renderVoiceGenderUI(){
+  document.querySelectorAll('.gender-btn').forEach(b=>b.classList.toggle('active', b.dataset.gender===voiceGender));
+}
+function previewVoice(){
+  speak("Hi, I'm here with you. This is what I sound like.", {force:true});
+}
+
+function renderVoiceToggle(){
+  const btn=document.getElementById('voiceToggleBtn');
+  if(!btn) return;
+  btn.classList.toggle('on', voiceEnabled);
+  btn.textContent = voiceEnabled ? '🔊 Voice' : '🔈 Voice';
+}
+function toggleVoice(){
+  voiceEnabled=!voiceEnabled;
+  try{ localStorage.setItem('steady_voice', voiceEnabled?'1':'0'); }catch(e){}
+  renderVoiceToggle();
+  if(voiceEnabled) speak("Voice guidance is on. I'll talk you through breathing, muscle relaxation, and the body scan.");
+  else window.speechSynthesis && window.speechSynthesis.cancel();
+}
+
+// A touch of natural variation so it reads like a person, not a loop:
+// slightly different rate/pitch each time, and short pauses at commas.
+function speak(text, opts){
+  opts = opts || {};
+  if((!voiceEnabled && !opts.force) || !('speechSynthesis' in window)){
+    if(opts.onend) opts.onend();
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  if(chosenVoice) u.voice = chosenVoice;
+  const jitter = (Math.random()*0.06)-0.03;
+  u.rate = (opts.rate || 0.9) + jitter;
+  u.pitch = (opts.pitch || (voiceGender==='male' ? 0.92 : 1.05)) + jitter;
+  u.volume = 1;
+  duckBgm(true);
+  u.onend = ()=>{ duckBgm(false); if(opts.onend) opts.onend(); };
+  u.onerror = ()=>{ duckBgm(false); if(opts.onend) opts.onend(); };
+  window.speechSynthesis.speak(u);
+}
+
+// Small human-feeling variety for the most-repeated breathing cues,
+// so "Breathe in" doesn't sound identical every single cycle.
+const BREATH_PHRASES = {
+  'Breathe in': ['Breathe in', 'In, nice and slow', 'Breathe in gently', 'In through the nose'],
+  'Breathe out': ['Breathe out', 'Let it go', 'Out, slow and easy', 'And release'],
+  'Hold': ['Hold', 'Hold it there', 'And hold'],
+};
+function naturalBreathPhrase(label){
+  const options = BREATH_PHRASES[label] || [label];
+  return options[Math.floor(Math.random()*options.length)];
+}
+
+renderVoiceToggle();
+
+/* ---------------- DATA ---------------- */
+const TECHNIQUES = {
+  breathing:{title:"Guided Breathing", icon:"🫧", blurb:"Slow, paced breathing calms your nervous system in under two minutes.", target:"breathing"},
+  grounding:{title:"5-4-3-2-1 Grounding", icon:"🖐️", blurb:"Anchors your mind in the present using your five senses.", target:"grounding"},
+  pmr:{title:"Progressive Muscle Relaxation", icon:"💪", blurb:"Tense and release each muscle group to shed physical tension.", target:"pmr"},
+  bodyscan:{title:"Body Scan", icon:"🌙", blurb:"A slow guided sweep of attention through the body.", target:"bodyscan"},
+  journal:{title:"Journaling", icon:"📓", blurb:"Gets anxious thoughts out of your head and onto the page.", target:"journal"},
+  reframe:{title:"Thought Reframe", icon:"🔄", blurb:"Challenges anxious thinking patterns, finds steadier ground.", target:"reframe"},
+  sounds:{title:"Calming Sounds", icon:"🎧", blurb:"Gentle generated noise to soothe an overactive mind.", target:"sounds-section"},
+  movement:{title:"Movement Break", icon:"🏃", blurb:"Short, easy movement to discharge restless energy.", target:"movement"},
+};
+
+const SYMPTOMS = [
+  {name:"Trouble falling asleep", tags:["bodyscan","journal","sounds"]},
+  {name:"Racing or pounding heart", tags:["breathing","grounding","pmr"]},
+  {name:"Racing, spiraling thoughts", tags:["reframe","journal","grounding"]},
+  {name:"Tight chest / short of breath", tags:["breathing","pmr"]},
+  {name:"Muscle tension or aches", tags:["pmr","bodyscan"]},
+  {name:"Restless, can't sit still", tags:["movement","breathing"]},
+  {name:"Trouble concentrating", tags:["grounding","journal"]},
+  {name:"On edge / irritable", tags:["pmr","breathing"]},
+  {name:"Sweating or hot flashes", tags:["breathing","grounding"]},
+  {name:"Upset stomach / nausea", tags:["breathing","grounding"]},
+  {name:"Avoiding people or places", tags:["reframe","journal"]},
+  {name:"Sudden panic or dread", tags:["grounding","breathing"]},
+  {name:"Stuck on the same worry", tags:["journal","reframe"]},
+  {name:"Tired but wired", tags:["bodyscan","movement","sounds"]},
+  {name:"Feeling detached / unreal", tags:["grounding","breathing"]},
+  {name:"Worrying about the future", tags:["reframe","journal"]},
+];
+
+let selectedSymptoms = new Set();
+
+/* ---------------- SYMPTOM GRID ---------------- */
+const symptomGrid = document.getElementById('symptomGrid');
+SYMPTOMS.forEach((s,i)=>{
+  const chip=document.createElement('button');
+  chip.className='chip';
+  chip.textContent=s.name;
+  chip.onclick=()=>{
+    chip.classList.toggle('selected');
+    if(selectedSymptoms.has(i)){ selectedSymptoms.delete(i); }
+    else{ selectedSymptoms.add(i); symptomLog.push({symptom:s.name, time:new Date()}); persist(); renderPatterns(); }
+    renderToolkit();
+  };
+  symptomGrid.appendChild(chip);
+});
+
+function clearSymptoms(){
+  selectedSymptoms.clear();
+  document.querySelectorAll('#symptomGrid .chip').forEach(c=>c.classList.remove('selected'));
+  renderToolkit();
+}
+
+/* ---------------- TOOLKIT GRID ---------------- */
+const toolkitGrid = document.getElementById('toolkitGrid');
+function renderToolkit(){
+  const matched = new Set();
+  selectedSymptoms.forEach(i=> SYMPTOMS[i].tags.forEach(t=>matched.add(t)));
+  toolkitGrid.innerHTML='';
+  Object.entries(TECHNIQUES).forEach(([key,t])=>{
+    const isMatch = matched.has(key);
+    const dim = matched.size>0 && !isMatch;
+    const card=document.createElement('div');
+    card.className='card tool-card'+(isMatch?' match':'')+(dim?' dim':'');
+    card.onclick=()=>goToSection(t.target);
+    card.innerHTML = (isMatch?'<div class="badge">For you</div>':'') +
+      `<span class="ticon">${t.icon}</span><h3>${t.title}</h3><p>${t.blurb}</p>`;
+    toolkitGrid.appendChild(card);
+  });
+  const countEl=document.getElementById('selectedCount');
+  if(selectedSymptoms.size===0){
+    countEl.textContent="Nothing selected yet — that's okay too. Showing all techniques below.";
+  } else {
+    countEl.textContent = selectedSymptoms.size+" symptom"+(selectedSymptoms.size>1?'s':'')+" selected · "+matched.size+" technique"+(matched.size>1?'s':'')+" matched below";
+  }
+}
+renderToolkit();
+
+function goToSection(id){var el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth', block:'start'});}
+
+/* ---------------- PANIC / COMPANION ---------------- */
+function panicMode(){
+  const r=document.getElementById('reassure');
+  r.classList.add('show');
+  setTimeout(()=>r.classList.remove('show'), 6000);
+  goToSection('breathing');
+  setPattern('box');
+  if(!breathing.running) toggleBreathing();
+}
+
+/* ---------------- BREATHING ---------------- */
+const PATTERNS = {
+  box:{label:'Box breathing', phases:[['Breathe in',4],['Hold',4],['Breathe out',4],['Hold',4]]},
+  calm478:{label:'4-7-8 calm', phases:[['Breathe in',4],['Hold',7],['Breathe out',8]]},
+  coherent:{label:'Coherent 5-5', phases:[['Breathe in',5],['Breathe out',5]]},
+};
+let breathing = {pattern:'box', phaseIdx:0, secsLeft:0, running:false, timer:null, cycles:0};
+
+const patternRow=document.getElementById('patternRow');
+Object.entries(PATTERNS).forEach(([key,p])=>{
+  const b=document.createElement('button');
+  b.className='pattern-btn'+(key===breathing.pattern?' active':'');
+  b.textContent=p.label;
+  b.onclick=()=>setPattern(key);
+  b.dataset.key=key;
+  patternRow.appendChild(b);
+});
+
+function setPattern(key){
+  breathing.pattern=key;
+  breathing.phaseIdx=0;
+  document.querySelectorAll('.pattern-btn').forEach(b=>b.classList.toggle('active', b.dataset.key===key));
+  primePhase();
+}
+function primePhase(){
+  const phase = PATTERNS[breathing.pattern].phases[breathing.phaseIdx];
+  breathing.secsLeft = phase[1];
+  document.getElementById('phaseLabel').textContent = phase[0];
+  document.getElementById('phaseCount').textContent = breathing.secsLeft;
+  const orb=document.getElementById('breatheOrb');
+  orb.style.transitionDuration = phase[1]+'s';
+  orb.style.transform = phase[0].startsWith('Breathe in') ? 'scale(1.25)' : phase[0].startsWith('Breathe out') ? 'scale(0.85)' : orb.style.transform;
+  speak(naturalBreathPhrase(phase[0]));
+}
+primePhase();
+
+function toggleBreathing(){
+  breathing.running = !breathing.running;
+  document.getElementById('breatheToggle').textContent = breathing.running?'Pause':'Start';
+  if(breathing.running){
+    primePhase();
+    breathing.timer = setInterval(tickBreath,1000);
+  } else {
+    clearInterval(breathing.timer);
+  }
+}
+function tickBreath(){
+  breathing.secsLeft--;
+  if(breathing.secsLeft<=0){
+    breathing.phaseIdx++;
+    const phases=PATTERNS[breathing.pattern].phases;
+    if(breathing.phaseIdx>=phases.length){
+      breathing.phaseIdx=0;
+      breathing.cycles++;
+      document.getElementById('breatheMeta').textContent = breathing.cycles+" cycle"+(breathing.cycles>1?'s':'')+" completed this session";
+      awardBadge('breather'); registerCheckIn();
+    }
+    primePhase();
+  } else {
+    document.getElementById('phaseCount').textContent = breathing.secsLeft;
+  }
+}
+function resetBreathing(){
+  clearInterval(breathing.timer);
+  breathing.running=false; breathing.phaseIdx=0; breathing.cycles=0;
+  document.getElementById('breatheToggle').textContent='Start';
+  document.getElementById('breatheMeta').textContent='0 cycles completed this session';
+  primePhase();
+}
+
+/* ---------------- GROUNDING ---------------- */
+const GROUND_STEPS=[
+  {n:5, sense:'see', label:'Name 5 things you can see'},
+  {n:4, sense:'touch', label:'Name 4 things you can touch'},
+  {n:3, sense:'hear', label:'Name 3 things you can hear'},
+  {n:2, sense:'smell', label:'Name 2 things you can smell'},
+  {n:1, sense:'taste', label:'Name 1 thing you can taste'},
+];
+let groundIdx=0;
+const groundStepsEl=document.getElementById('groundSteps');
+const groundDotsEl=document.getElementById('groundDots');
+GROUND_STEPS.forEach((s,i)=>{
+  const div=document.createElement('div');
+  div.className='ground-step'+(i===0?' active':'');
+  div.dataset.idx=i;
+  let inputs='';
+  for(let k=0;k<s.n;k++) inputs+=`<input type="text" placeholder="${s.sense} #${k+1}">`;
+  div.innerHTML=`<div class="ground-title">${s.label}</div><div class="ground-inputs">${inputs}</div>`;
+  groundStepsEl.appendChild(div);
+  const dot=document.createElement('span'); if(i===0) dot.classList.add('on');
+  groundDotsEl.appendChild(dot);
+});
+function groundStep(dir){
+  const steps=document.querySelectorAll('.ground-step');
+  const dots=document.querySelectorAll('.ground-dots span');
+  if(groundIdx===GROUND_STEPS.length-1 && dir>0){
+    groundStepsEl.innerHTML='<div class="ground-title">🌿 You made it through all five senses. Notice how your breathing feels right now.</div>';
+    document.getElementById('groundNextBtn').textContent='Restart';
+    document.getElementById('groundNextBtn').onclick=()=>location.reload();
+    awardBadge('grounded'); registerCheckIn();
+    return;
+  }
+  groundIdx = Math.max(0, Math.min(GROUND_STEPS.length-1, groundIdx+dir));
+  steps.forEach((el,i)=>el.classList.toggle('active', i===groundIdx));
+  dots.forEach((el,i)=>el.classList.toggle('on', i<=groundIdx));
+}
+
+/* ---------------- PMR ---------------- */
+const PMR_GROUPS=[
+  {name:"Hands & forearms", tense:"Make tight fists with both hands. Squeeze hard — feel the tension pulling through your fingers and forearms.", release:"Let your fingers uncurl slowly and go completely loose. Notice the warmth spreading in as the tension drains out.", tenseSecs:5, releaseSecs:8},
+  {name:"Upper arms", tense:"Bend your elbows and bring your hands toward your shoulders, like flexing a bicep. Squeeze as tight as you can.", release:"Let your arms drop heavy to your sides. Feel them go limp and heavy, like dead weight.", tenseSecs:5, releaseSecs:8},
+  {name:"Shoulders", tense:"Raise both shoulders straight up toward your ears and hold, squeezing tight.", release:"Let them drop suddenly and roll back down. Feel the space open up between your shoulders and ears.", tenseSecs:5, releaseSecs:8},
+  {name:"Face & jaw", tense:"Scrunch your whole face — shut your eyes tight, pull your eyebrows down, clench your jaw.", release:"Let your face go completely slack. Let your jaw hang loose, lips slightly parted.", tenseSecs:5, releaseSecs:8},
+  {name:"Chest", tense:"Take a deep breath in and hold it, tightening the muscles across your chest.", release:"Exhale slowly through your mouth. Let your chest soften and your breathing return to normal.", tenseSecs:5, releaseSecs:8},
+  {name:"Stomach", tense:"Pull your stomach in tight, as if bracing for a light punch.", release:"Let your belly go soft and let it rise and fall freely with your breath.", tenseSecs:5, releaseSecs:8},
+  {name:"Hips & glutes", tense:"Squeeze your glutes together tightly, like you're holding a coin between them.", release:"Let go completely. Feel your weight sink into the chair or floor beneath you.", tenseSecs:5, releaseSecs:8},
+  {name:"Thighs", tense:"Press your knees together and tighten your thigh muscles as hard as you can.", release:"Let your legs go loose and heavy, sinking down.", tenseSecs:5, releaseSecs:8},
+  {name:"Calves", tense:"Point your toes up toward your face, flexing your calf muscles tight.", release:"Let your feet fall back naturally and feel the muscles unwind.", tenseSecs:5, releaseSecs:8},
+  {name:"Feet", tense:"Curl your toes tightly under, scrunching your whole foot.", release:"Let your toes spread out and relax completely.", tenseSecs:5, releaseSecs:8},
+];
+let pmr={idx:0, phase:'TENSE', secsLeft:0, running:false, timer:null, lastSpoken:null, mode:'idle'};
+let pmrToken=0; // invalidates any in-flight speech callback after a reset
+// mode: 'idle' (not started) -> 'narrating' (instruction being read) -> 'counting' (silent tense/release countdown)
+
+function pmrPhaseText(){
+  const g=PMR_GROUPS[pmr.idx];
+  return pmr.phase==='TENSE' ? g.tense : g.release;
+}
+function pmrBaseSecs(){
+  const g=PMR_GROUPS[pmr.idx];
+  return pmr.phase==='TENSE' ? g.tenseSecs : g.releaseSecs;
+}
+function renderPmr(){
+  const g=PMR_GROUPS[pmr.idx];
+  document.getElementById('pmrName').textContent = g.name;
+  document.getElementById('pmrInstruction').textContent = pmrPhaseText();
+  const phaseEl=document.getElementById('pmrPhase');
+  phaseEl.textContent = pmr.mode==='narrating' ? pmr.phase+' · listen…' : pmr.phase+' · '+pmr.secsLeft+'s';
+  phaseEl.className='seq-phase '+(pmr.phase==='TENSE'?'tense':'release');
+  document.getElementById('pmrFill').style.width = (((pmr.idx)/(PMR_GROUPS.length))*100)+'%';
+}
+// Speaks the instruction for the current phase, then hands off to the silent countdown once it's fully done.
+function enterPmrPhase(){
+  clearInterval(pmr.timer);
+  pmr.mode='narrating';
+  pmr.secsLeft=pmrBaseSecs();
+  renderPmr();
+  const speakKey=pmr.idx+'-'+pmr.phase;
+  pmr.lastSpoken=speakKey;
+  const myToken = ++pmrToken;
+  speak(pmrPhaseText(), { onend: ()=>{ if(myToken===pmrToken) startPmrCountdown(); } });
+}
+function startPmrCountdown(){
+  if(pmr.mode==='counting') return;
+  pmr.mode='counting';
+  pmr.secsLeft=pmrBaseSecs();
+  renderPmr();
+  if(pmr.running) pmr.timer=setInterval(tickPmr,1000);
+}
+function tickPmr(){
+  pmr.secsLeft--;
+  if(pmr.secsLeft<=0){
+    clearInterval(pmr.timer);
+    if(pmr.phase==='TENSE'){ pmr.phase='RELEASE'; }
+    else { pmr.idx++; if(pmr.idx>=PMR_GROUPS.length){ finishPmr(); return; } pmr.phase='TENSE'; }
+    enterPmrPhase();
+    return;
+  }
+  renderPmr();
+}
+function togglePmr(){
+  pmr.running=!pmr.running;
+  document.getElementById('pmrToggle').textContent = pmr.running?'Pause':'Start';
+  if(pmr.running){
+    if(pmr.mode==='idle') enterPmrPhase();
+    else if(pmr.mode==='counting') pmr.timer=setInterval(tickPmr,1000);
+    // if mode is 'narrating', the instruction is still being read (or queued) —
+    // startPmrCountdown() will fire on its own once it ends, and will start the
+    // timer then since pmr.running is now true.
+  } else {
+    clearInterval(pmr.timer);
+  }
+}
+function finishPmr(){
+  clearInterval(pmr.timer);
+  pmr.running=false; pmr.mode='idle';
+  document.getElementById('pmrToggle').textContent='Start';
+  document.getElementById('pmrName').textContent='All done';
+  document.getElementById('pmrInstruction').textContent='🌿 You worked through every muscle group. Take a moment to notice how your body feels now compared to when you started.';
+  document.getElementById('pmrPhase').textContent='COMPLETE';
+  document.getElementById('pmrPhase').className='seq-phase release';
+  document.getElementById('pmrFill').style.width='100%';
+  awardBadge('released'); registerCheckIn();
+}
+function resetPmr(){
+  clearInterval(pmr.timer);
+  pmrToken++;
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  pmr={idx:0,phase:'TENSE',secsLeft:PMR_GROUPS[0].tenseSecs,running:false,timer:null,lastSpoken:null,mode:'idle'};
+  document.getElementById('pmrToggle').textContent='Start';
+  renderPmr();
+}
+renderPmr();
+
+/* ---------------- BODY SCAN ---------------- */
+const SCAN_PARTS=[
+  "Let your shoulders drop away from your ears.",
+  "Notice your forehead and jaw — let them soften.",
+  "Feel the weight of your arms, heavy and loose.",
+  "Notice your chest rising and falling, unhurried.",
+  "Soften your stomach — let it move freely as you breathe.",
+  "Feel your hips settle into the chair or floor.",
+  "Notice your legs, heavy and supported.",
+  "Feel your feet, fully in contact with the ground.",
+  "Take one full breath and notice your whole body, all at once."
+];
+let scan={idx:0, running:false, timer:null, elapsed:0};
+const SCAN_STEP_SECS=20, SCAN_TOTAL=SCAN_PARTS.length*SCAN_STEP_SECS;
+function toggleScan(){
+  scan.running=!scan.running;
+  document.getElementById('scanToggle').textContent = scan.running?'Pause':'Start';
+  if(scan.running){
+    document.getElementById('scanText').textContent = SCAN_PARTS[scan.idx];
+    speak(SCAN_PARTS[scan.idx]);
+    scan.timer=setInterval(tickScan,1000);
+  } else clearInterval(scan.timer);
+}
+function tickScan(){
+  scan.elapsed++;
+  const newIdx=Math.min(SCAN_PARTS.length-1, Math.floor(scan.elapsed/SCAN_STEP_SECS));
+  if(newIdx!==scan.idx){ scan.idx=newIdx; document.getElementById('scanText').textContent=SCAN_PARTS[scan.idx]; speak(SCAN_PARTS[scan.idx]); }
+  document.getElementById('scanFill').style.width = Math.min(100,(scan.elapsed/SCAN_TOTAL)*100)+'%';
+  if(scan.elapsed>=SCAN_TOTAL){ clearInterval(scan.timer); scan.running=false; document.getElementById('scanToggle').textContent='Start'; document.getElementById('scanText').textContent='🌙 Scan complete. Notice how your body feels now compared to when you started.'; awardBadge('scanner'); registerCheckIn(); }
+}
+function resetScan(){
+  clearInterval(scan.timer); scan={idx:0,running:false,timer:null,elapsed:0};
+  document.getElementById('scanToggle').textContent='Start';
+  document.getElementById('scanFill').style.width='0%';
+  document.getElementById('scanText').textContent='Press play, get comfortable, and let your attention rest wherever we point it.';
+}
+
+/* ---------------- JOURNAL ---------------- */
+const PROMPTS=[
+  "What's the thought that's loudest right now?",
+  "What's the worst that could happen — and how likely is it, really?",
+  "What would you tell a friend who felt exactly this way?",
+  "What's one thing that's actually within your control today?",
+  "What does this anxiety feel like in your body, specifically?",
+  "What's true right now, independent of the worry?",
+];
+let promptIdx=0;
+function newPrompt(){ promptIdx=(promptIdx+1)%PROMPTS.length; document.getElementById('journalPrompt').textContent=PROMPTS[promptIdx]; }
+let journalEntries=[];
+function saveJournal(){
+  const txt=document.getElementById('journalText').value.trim();
+  if(!txt) return;
+  journalEntries.unshift({text:txt, prompt:PROMPTS[promptIdx], time:new Date()});
+  document.getElementById('journalText').value='';
+  renderJournal();
+  awardBadge('journaler'); registerCheckIn(); persist();
+}
+function renderJournal(){
+  const el=document.getElementById('journalEntries');
+  el.innerHTML='';
+  journalEntries.forEach((e,i)=>{
+    const div=document.createElement('div'); div.className='entry';
+    div.innerHTML=`<button type="button" class="del" onclick="deleteJournal(${i})">✕</button><div class="meta">${e.time.toLocaleTimeString()} · ${e.prompt}</div>${escapeHtml(e.text)}`;
+    el.appendChild(div);
+  });
+}
+function deleteJournal(i){ journalEntries.splice(i,1); renderJournal(); persist(); }
+
+/* ---------------- REFRAME ---------------- */
+const DISTORTION_HELP = {
+  "Catastrophizing":{
+    q1:"If the worst really happened, how would you cope, realistically?",
+    q2:"What's the most likely outcome here, not just the worst one?",
+    build:(a1,a2)=>`The worst case isn't the most likely case. A more likely outcome is: ${a2||'___'}. And even if things went badly, I could cope by: ${a1||'___'}.`
+  },
+  "Mind reading":{
+    q1:"What's the actual evidence for what they're thinking — did they say it, or are you guessing?",
+    q2:"What's a more neutral, equally possible explanation?",
+    build:(a1,a2)=>`I don't actually know what they're thinking — I'm guessing. The evidence I have is: ${a1||'___'}. A more neutral explanation is: ${a2||'___'}.`
+  },
+  "All-or-nothing":{
+    q1:"What's one part of this that actually went okay?",
+    q2:"Is there a middle ground between total success and total failure here?",
+    build:(a1,a2)=>`This wasn't perfect, but it wasn't a total failure either. What went okay: ${a1||'___'}. A more balanced way to see it: ${a2||'___'}.`
+  },
+  "Overgeneralizing":{
+    q1:"Can you think of one time it was actually different?",
+    q2:"Is this one moment, or is it truly 'always' / 'never'?",
+    build:(a1,a2)=>`This happened this time, but that doesn't mean it always will — for example: ${a1||'___'}. So instead of 'always' or 'never', it's more accurate to say: ${a2||'___'}.`
+  },
+  "Should statements":{
+    q1:"Would you hold a close friend to this exact same standard?",
+    q2:"What's a more realistic, kinder standard for this situation?",
+    build:(a1,a2)=>`I don't have to be perfect at this — I wouldn't expect it of a friend (${a1||'___'}). A more realistic standard for me here is: ${a2||'___'}.`
+  },
+  "Fortune telling":{
+    q1:"Have you predicted the future incorrectly before?",
+    q2:"What's one other way this could realistically turn out?",
+    build:(a1,a2)=>`I don't actually know what will happen yet, and my predictions have been wrong before (${a1||'___'}). One other realistic outcome is: ${a2||'___'}.`
+  },
+};
+const GENERIC_HELP = {
+  q1:"What would you tell a close friend who had this exact thought?",
+  q2:"What's the most likely outcome here, not just the worst one?",
+  build:(a1,a2)=>`If a friend told me this, I'd say: ${a1||'___'}. And realistically, the most likely outcome is: ${a2||'___'}.`
+};
+const DISTORTIONS=Object.keys(DISTORTION_HELP);
+let selectedDistortions=new Set();
+const distortionRow=document.getElementById('distortionRow');
+DISTORTIONS.forEach(d=>{
+  const c=document.createElement('button'); c.type='button'; c.className='distortion-chip'; c.textContent=d;
+  c.onclick=()=>{
+    c.classList.toggle('on');
+    selectedDistortions.has(d)?selectedDistortions.delete(d):selectedDistortions.add(d);
+    renderGuideQuestions();
+  };
+  distortionRow.appendChild(c);
+});
+function activeHelp(){
+  const first=[...selectedDistortions][0];
+  return first ? DISTORTION_HELP[first] : GENERIC_HELP;
+}
+function renderGuideQuestions(){
+  const help=activeHelp();
+  document.getElementById('guideQ1Label').textContent = '3. '+help.q1;
+  document.getElementById('guideQ2Label').textContent = '4. '+help.q2;
+}
+renderGuideQuestions();
+function buildReframe(){
+  const help=activeHelp();
+  const a1=document.getElementById('guideA1').value.trim();
+  const a2=document.getElementById('guideA2').value.trim();
+  document.getElementById('reframeAnswer').value = help.build(a1,a2);
+}
+let reframeEntries=[];
+function saveReframe(){
+  const thought=document.getElementById('reframeThought').value.trim();
+  const answer=document.getElementById('reframeAnswer').value.trim();
+  if(!thought || !answer) return;
+  reframeEntries.unshift({thought,answer,tags:[...selectedDistortions], time:new Date()});
+  document.getElementById('reframeThought').value='';
+  document.getElementById('reframeAnswer').value='';
+  document.getElementById('guideA1').value='';
+  document.getElementById('guideA2').value='';
+  selectedDistortions.clear();
+  document.querySelectorAll('.distortion-chip').forEach(c=>c.classList.remove('on'));
+  renderGuideQuestions();
+  renderReframe();
+  awardBadge('reframer'); registerCheckIn(); persist();
+}
+function renderReframe(){
+  const el=document.getElementById('reframeEntries'); el.innerHTML='';
+  reframeEntries.forEach((e,i)=>{
+    const div=document.createElement('div'); div.className='entry';
+    div.innerHTML=`<button type="button" class="del" onclick="deleteReframe(${i})">✕</button><div class="meta">${e.time.toLocaleTimeString()}${e.tags.length?' · '+e.tags.join(', '):''}</div><strong>Thought:</strong> ${escapeHtml(e.thought)}<br><strong>Reframe:</strong> ${escapeHtml(e.answer)}`;
+    el.appendChild(div);
+  });
+}
+function deleteReframe(i){ reframeEntries.splice(i,1); renderReframe(); persist(); }
+
+
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+/* ---------------- MOVEMENT TIMER ---------------- */
+let move={secs:60, running:false, timer:null};
+function toggleMoveTimer(){
+  move.running=!move.running;
+  document.getElementById('moveToggle').textContent = move.running?'Pause':'Start 60s timer';
+  if(move.running) move.timer=setInterval(tickMove,1000); else clearInterval(move.timer);
+}
+function tickMove(){
+  move.secs--;
+  if(move.secs<=0){ clearInterval(move.timer); move.running=false; document.getElementById('moveToggle').textContent='Start 60s timer'; document.getElementById('moveTimer').textContent='🎉 Done'; awardBadge('mover'); registerCheckIn(); return; }
+  renderMove();
+}
+function renderMove(){ document.getElementById('moveTimer').textContent = '0:'+String(move.secs).padStart(2,'0'); }
+function resetMoveTimer(){ clearInterval(move.timer); move={secs:60,running:false,timer:null}; document.getElementById('moveToggle').textContent='Start 60s timer'; renderMove(); }
+
+/* ---------------- SOUNDS & BACKGROUND MUSIC (Web Audio, generated on the fly) ---------------- */
+function ensureAudio(){
+  if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+  if(audioCtx.state==='suspended') audioCtx.resume();
+}
+function stopActiveAudio(){
+  if(activeAudio){ try{ activeAudio.stop(); }catch(e){} activeAudio=null; }
+}
+function duckBgm(down){
+  if(!activeAudio || !activeAudio.gain) return;
+  const target = down ? bgmTargetVolume*0.35 : bgmTargetVolume;
+  activeAudio.gain.gain.setTargetAtTime(target, audioCtx.currentTime, 0.4);
+}
+function buildNoiseBuffer(kind){
+  const bufferSize = 2*audioCtx.sampleRate;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  if(kind==='white'){
+    for(let i=0;i<bufferSize;i++) data[i]=Math.random()*2-1;
+  } else {
+    let last=0;
+    for(let i=0;i<bufferSize;i++){
+      const white=Math.random()*2-1;
+      last = (last + 0.02*white)/1.02;
+      data[i]=last*3.2;
+    }
+  }
+  return buffer;
+}
+function startWhiteOrRain(kind){
+  const src=audioCtx.createBufferSource();
+  src.buffer=buildNoiseBuffer(kind==='rain'?'brown':'white'); src.loop=true;
+  const gain=audioCtx.createGain(); gain.gain.value=bgmTargetVolume;
+  if(kind==='rain'){
+    const filter=audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=500;
+    src.connect(filter).connect(gain).connect(audioCtx.destination);
+  } else {
+    src.connect(gain).connect(audioCtx.destination);
+  }
+  src.start();
+  return { gain, stop:()=>{ try{src.stop();}catch(e){} } };
+}
+function startOcean(){
+  const src=audioCtx.createBufferSource();
+  src.buffer=buildNoiseBuffer('brown'); src.loop=true;
+  const filter=audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=900;
+  const gain=audioCtx.createGain(); gain.gain.value=bgmTargetVolume;
+  const wave=audioCtx.createGain(); // amplitude-modulated to sound like waves washing in and out
+  const lfo=audioCtx.createOscillator(); lfo.frequency.value=0.09;
+  const lfoDepth=audioCtx.createGain(); lfoDepth.gain.value=0.45;
+  lfo.connect(lfoDepth); lfoDepth.connect(wave.gain);
+  wave.gain.value=0.55;
+  lfo.start();
+  src.connect(filter).connect(wave).connect(gain).connect(audioCtx.destination);
+  src.start();
+  return { gain, stop:()=>{ try{src.stop();}catch(e){} try{lfo.stop();}catch(e){} } };
+}
+function startPad(){
+  // A slow, evolving ambient chord — gentle sine layers with slow beating, like a soft synth pad.
+  const notes=[130.81,164.81,196.00,246.94]; // C3, E3, G3, B3 — warm major7 chord
+  const master=audioCtx.createGain(); master.gain.value=bgmTargetVolume;
+  const oscs=[]; const lfos=[];
+  notes.forEach((freq,i)=>{
+    const osc=audioCtx.createOscillator(); osc.type='sine'; osc.frequency.value=freq;
+    const oscGain=audioCtx.createGain(); oscGain.gain.value=0.22;
+    const lfo=audioCtx.createOscillator(); lfo.frequency.value=0.05+i*0.015;
+    const lfoDepth=audioCtx.createGain(); lfoDepth.gain.value=0.06;
+    lfo.connect(lfoDepth); lfoDepth.connect(oscGain.gain);
+    osc.connect(oscGain).connect(master);
+    osc.start(); lfo.start();
+    oscs.push(osc); lfos.push(lfo);
+  });
+  master.connect(audioCtx.destination);
+  return { gain:master, stop:()=>{ oscs.forEach(o=>{try{o.stop();}catch(e){}}); lfos.forEach(o=>{try{o.stop();}catch(e){}}); } };
+}
+const SOUND_LABELS = {white:'White noise', rain:'Rain', ocean:'Ocean waves', pad:'Calm pad'};
+function setSound(type){
+  ensureAudio();
+  stopActiveAudio();
+  currentSound=type;
+  try{ localStorage.setItem('steady_bgm', type); }catch(e){}
+  document.querySelectorAll('.sound-btn').forEach(b=>b.classList.toggle('active', b.dataset.sound===type));
+  renderBgmToggle();
+  if(type==='off') return;
+  awardBadge('listener'); registerCheckIn();
+  if(type==='white' || type==='rain') activeAudio = startWhiteOrRain(type);
+  else if(type==='ocean') activeAudio = startOcean();
+  else if(type==='pad') activeAudio = startPad();
+}
+function setVolume(v){
+  bgmTargetVolume = +v;
+  if(activeAudio && activeAudio.gain) activeAudio.gain.gain.value = bgmTargetVolume;
+}
+function toggleBgmQuick(){
+  if(currentSound!=='off'){ setSound('off'); return; }
+  let last='pad';
+  try{ last = localStorage.getItem('steady_bgm_last') || 'pad'; }catch(e){}
+  setSound(last);
+}
+function renderBgmToggle(){
+  const btn=document.getElementById('bgmToggleBtn');
+  if(!btn) return;
+  const on = currentSound!=='off';
+  btn.classList.toggle('on', on);
+  btn.textContent = on ? '🎵 '+(SOUND_LABELS[currentSound]||'Music') : '🎵 Music';
+  if(on){ try{ localStorage.setItem('steady_bgm_last', currentSound); }catch(e){} }
+}
+
+/* ---------------- MOOD TRACKER ---------------- */
+const MOOD_LABELS=[[0,'😌','very calm'],[2,'🙂','calm'],[4,'😐','mild'],[6,'😟','moderate'],[8,'😰','high'],[10,'🥵','overwhelming']];
+function moodLabel(v){
+  v=+v;
+  let label=MOOD_LABELS[0];
+  for(const m of MOOD_LABELS) if(v>=m[0]) label=m;
+  return label[1]+' '+v+' · '+label[2];
+}
+function updateMoodReadout(v){ document.getElementById('moodReadout').textContent=moodLabel(v); }
+updateMoodReadout(5);
+let moodLog=[];
+function logMood(){
+  const v=+document.getElementById('moodSlider').value;
+  moodLog.push({v, time:new Date()});
+  renderMoodChart();
+  registerCheckIn(); persist();
+  if(moodLog.length>=3) awardBadge('tracker');
+}
+function renderMoodChart(){
+  const chart=document.getElementById('moodChart'); chart.innerHTML='';
+  moodLog.slice(-24).forEach(m=>{
+    const bar=document.createElement('div'); bar.className='bar';
+    bar.style.height=Math.max(6,(m.v/10)*110)+'px';
+    bar.title=m.v+' at '+m.time.toLocaleTimeString();
+    chart.appendChild(bar);
+  });
+  const stats=document.getElementById('moodStats');
+  if(moodLog.length===0){ stats.textContent=''; return; }
+  const avg=(moodLog.reduce((a,b)=>a+b.v,0)/moodLog.length).toFixed(1);
+  const last=moodLog[moodLog.length-1].v;
+  stats.innerHTML = `<span>${moodLog.length} entr${moodLog.length>1?'ies':'y'} logged</span><span>Average: ${avg}</span><span>Latest: ${last}</span>`;
+}
+
+/* ---------------- STREAKS & BADGES ---------------- */
+const BADGES = {
+  breather:{icon:'🫧', label:'Breather', desc:'Completed a full breathing cycle'},
+  grounded:{icon:'🖐️', label:'Grounded', desc:'Finished the 5-4-3-2-1 walkthrough'},
+  released:{icon:'💪', label:'Released', desc:'Worked through all 10 PMR muscle groups'},
+  scanner:{icon:'🌙', label:'Scanner', desc:'Completed a full body scan'},
+  journaler:{icon:'📓', label:'Journaler', desc:'Saved a journal entry'},
+  reframer:{icon:'🔄', label:'Reframer', desc:'Saved a thought reframe'},
+  mover:{icon:'🏃', label:'Mover', desc:'Completed a movement break'},
+  listener:{icon:'🎧', label:'Listener', desc:'Tried the calming sounds'},
+  tracker:{icon:'📊', label:'Tracker', desc:'Logged your mood a few times'},
+};
+let earnedBadges = new Set();
+let streakData = {count:0, longest:0, lastCheckIn:null};
+let lastToastTimer=null;
+function awardBadge(id){
+  if(earnedBadges.has(id)) return;
+  earnedBadges.add(id);
+  renderBadges();
+  const b=BADGES[id];
+  const toast=document.getElementById('badgeToast');
+  toast.textContent = '🎉 New badge — '+b.icon+' '+b.label+': '+b.desc;
+  toast.classList.add('show');
+  clearTimeout(lastToastTimer);
+  lastToastTimer=setTimeout(()=>toast.classList.remove('show'), 4000);
+  persist();
+}
+function registerCheckIn(){
+  const today = new Date().toISOString().slice(0,10);
+  if(streakData.lastCheckIn===today) return; // already counted today
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yesterday = y.toISOString().slice(0,10);
+  if(streakData.lastCheckIn===yesterday) streakData.count++;
+  else streakData.count=1;
+  streakData.longest = Math.max(streakData.longest, streakData.count);
+  streakData.lastCheckIn = today;
+  renderStreak();
+  persist();
+}
+function renderStreak(){
+  const head=document.getElementById('streakHeadline');
+  const sub=document.getElementById('streakSub');
+  const flame=document.getElementById('streakFlame');
+  const today = new Date().toISOString().slice(0,10);
+  if(streakData.count===0){
+    head.textContent='No check-ins yet';
+    sub.textContent='Complete any technique below and it counts — there\'s no penalty for a quiet day.';
+    flame.textContent='🌱';
+  } else if(streakData.lastCheckIn===today){
+    head.textContent=streakData.count+'-day check-in streak';
+    sub.textContent='Nice work showing up for yourself today.';
+    flame.textContent = streakData.count>=7?'🔥' : streakData.count>=3?'✨':'🌱';
+  } else {
+    head.textContent=streakData.count+'-day streak so far';
+    sub.textContent='Whenever you\'re ready today, one technique keeps it going. No pressure either way.';
+    flame.textContent = streakData.count>=7?'🔥' : streakData.count>=3?'✨':'🌱';
+  }
+  document.getElementById('streakLongest').textContent='Longest streak: '+streakData.longest+' day'+(streakData.longest===1?'':'s');
+}
+function renderBadges(){
+  const grid=document.getElementById('badgeGrid');
+  grid.innerHTML='';
+  Object.entries(BADGES).forEach(([id,b])=>{
+    const earned=earnedBadges.has(id);
+    const tile=document.createElement('div');
+    tile.className='badge-tile'+(earned?' earned':'');
+    tile.title=b.desc;
+    tile.innerHTML=`<span class="bicon">${b.icon}</span><span class="blabel">${b.label}</span>`;
+    grid.appendChild(tile);
+  });
+}
+renderStreak();
+renderBadges();
+
+/* ---------------- PATTERNS DASHBOARD ---------------- */
+let symptomLog=[];
+function renderPatterns(){
+  const empty=document.getElementById('patternsEmpty');
+  const grid=document.getElementById('patternsGrid');
+  if(symptomLog.length<3){ empty.style.display='block'; grid.style.display='none'; return; }
+  empty.style.display='none'; grid.style.display='grid';
+
+  const counts={};
+  symptomLog.forEach(e=>{ counts[e.symptom]=(counts[e.symptom]||0)+1; });
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxCount=top.length?top[0][1]:1;
+  document.getElementById('topSymptoms').innerHTML = top.map(([name,count])=>
+    `<div class="pattern-row"><span class="pname">${escapeHtml(name)}</span><div class="pbar" style="width:${Math.max(10,(count/maxCount)*100)}px;flex:none;"></div><span class="pcount">${count}</span></div>`
+  ).join('');
+
+  const buckets={Morning:0, Afternoon:0, Evening:0, Night:0};
+  symptomLog.forEach(e=>{
+    const h=new Date(e.time).getHours();
+    if(h<6) buckets.Night++; else if(h<12) buckets.Morning++; else if(h<17) buckets.Afternoon++; else if(h<21) buckets.Evening++; else buckets.Night++;
+  });
+  const maxB=Math.max(1,...Object.values(buckets));
+  document.getElementById('timeOfDay').innerHTML = Object.entries(buckets).map(([name,count])=>
+    `<div class="pattern-row"><span class="pname">${name}</span><div class="pbar" style="width:${Math.max(10,(count/maxB)*100)}px;flex:none;"></div><span class="pcount">${count}</span></div>`
+  ).join('');
+}
+renderPatterns();
+
+/* ---------------- PDF / PRINT SUMMARY ---------------- */
+function exportSummary(){
+  if(window.jspdf && window.jspdf.jsPDF){
+    try { exportSummaryAsPdf(); return; } catch(e){ console.warn('PDF export failed, falling back to print:', e); }
+  }
+  exportSummaryViaPrint();
+}
+
+function exportSummaryAsPdf(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'pt', format:'letter' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 54;
+  const maxWidth = pageWidth - margin*2;
+  let y = 64;
+
+  function ensureSpace(need){
+    if(y + need > pageHeight - 50){ doc.addPage(); y = 64; }
+  }
+  function heading(text, size){
+    ensureSpace(size+10);
+    doc.setFont('helvetica','bold'); doc.setFontSize(size);
+    doc.text(text, margin, y);
+    y += size*0.95;
+  }
+  function body(text, size){
+    doc.setFont('helvetica','normal'); doc.setFontSize(size||11);
+    const lines = doc.splitTextToSize(String(text), maxWidth);
+    lines.forEach(line=>{
+      ensureSpace(15);
+      doc.text(line, margin, y);
+      y += 15;
+    });
+  }
+
+  heading('Steady — Progress Summary', 19);
+  const genLine = 'Generated '+new Date().toLocaleString()+(currentUser ? ' · '+(currentUser.displayName||currentUser.email||'') : '');
+  body(genLine, 9.5);
+  y += 12;
+
+  heading('Check-ins', 13);
+  body('Current streak: '+streakData.count+' day'+(streakData.count===1?'':'s')+'  ·  Longest streak: '+streakData.longest+' day'+(streakData.longest===1?'':'s'));
+  y += 10;
+
+  heading('Badges earned', 13);
+  const badgeList = [...earnedBadges].map(id=>BADGES[id].icon+' '+BADGES[id].label).join('   ') || 'None yet.';
+  body(badgeList);
+  y += 10;
+
+  heading('Most-noticed symptoms', 13);
+  const counts={};
+  symptomLog.forEach(e=>{ counts[e.symptom]=(counts[e.symptom]||0)+1; });
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(top.length) top.forEach(([n,c])=> body('•  '+n+'  —  noted '+c+' time'+(c>1?'s':'')));
+  else body('Not enough data yet.');
+  y += 10;
+
+  heading('Mood', 13);
+  const avg = moodLog.length ? (moodLog.reduce((a,b)=>a+b.v,0)/moodLog.length).toFixed(1) : '—';
+  const last = moodLog.length ? moodLog[moodLog.length-1].v : '—';
+  body(moodLog.length+' entries logged  ·  Average: '+avg+'  ·  Latest: '+last);
+  y += 10;
+
+  heading('Recent journal entries', 13);
+  if(journalEntries.length){
+    journalEntries.slice(0,3).forEach(e=>{
+      body(e.time.toLocaleString(), 8.5);
+      body(e.text);
+      y += 6;
+    });
+  } else body('None yet.');
+  y += 4;
+
+  heading('Recent thought reframes', 13);
+  if(reframeEntries.length){
+    reframeEntries.slice(0,3).forEach(e=>{
+      body(e.time.toLocaleString(), 8.5);
+      body('Thought: '+e.thought);
+      body('Reframe: '+e.answer);
+      y += 6;
+    });
+  } else body('None yet.');
+
+  y += 14;
+  ensureSpace(30);
+  doc.setFont('helvetica','italic'); doc.setFontSize(8.5);
+  doc.setTextColor(120);
+  const disclaimerLines = doc.splitTextToSize('This is a self-reported summary from the Steady app, not a clinical assessment. It may be useful context to share with a therapist or doctor.', maxWidth);
+  disclaimerLines.forEach(line=>{ ensureSpace(13); doc.text(line, margin, y); y += 13; });
+
+  doc.save('steady-summary.pdf');
+}
+
+// Fallback if the PDF library couldn't load (e.g. no internet access) — opens the browser's print dialog instead.
+function exportSummaryViaPrint(){
+  const avg = moodLog.length ? (moodLog.reduce((a,b)=>a+b.v,0)/moodLog.length).toFixed(1) : '—';
+  const last = moodLog.length ? moodLog[moodLog.length-1].v : '—';
+  const badgeList = [...earnedBadges].map(id=>BADGES[id].icon+' '+BADGES[id].label).join(', ') || 'None yet';
+  const counts={};
+  symptomLog.forEach(e=>{ counts[e.symptom]=(counts[e.symptom]||0)+1; });
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topHtml = top.length ? '<ul>'+top.map(([n,c])=>`<li>${escapeHtml(n)} — noted ${c} time${c>1?'s':''}</li>`).join('')+'</ul>' : '<p>Not enough data yet.</p>';
+  const journalHtml = journalEntries.slice(0,3).map(e=>`<p><em>${e.time.toLocaleString()}</em><br>${escapeHtml(e.text)}</p>`).join('') || '<p>None yet.</p>';
+  const reframeHtml = reframeEntries.slice(0,3).map(e=>`<p><em>${e.time.toLocaleString()}</em><br><strong>Thought:</strong> ${escapeHtml(e.thought)}<br><strong>Reframe:</strong> ${escapeHtml(e.answer)}</p>`).join('') || '<p>None yet.</p>';
+
+  document.getElementById('printSummary').innerHTML = `
+    <h1>Steady — Progress Summary</h1>
+    <p>Generated ${new Date().toLocaleString()}${currentUser ? ' · '+escapeHtml(currentUser.displayName||currentUser.email||'') : ''}</p>
+    <h2>Check-ins</h2>
+    <p>Current streak: ${streakData.count} day${streakData.count===1?'':'s'} · Longest streak: ${streakData.longest} day${streakData.longest===1?'':'s'}</p>
+    <h2>Badges earned</h2>
+    <p>${badgeList}</p>
+    <h2>Most-noticed symptoms</h2>
+    ${topHtml}
+    <h2>Mood</h2>
+    <p>${moodLog.length} entries logged · Average: ${avg} · Latest: ${last}</p>
+    <h2>Recent journal entries</h2>
+    ${journalHtml}
+    <h2>Recent thought reframes</h2>
+    ${reframeHtml}
+    <p style="margin-top:30px;font-size:12px;color:#666;">This is a self-reported summary from the Steady app, not a clinical assessment. It may be useful context to share with a therapist or doctor.</p>
+  `;
+  setTimeout(()=>window.print(), 80);
+}
+
+/* ---------------- PERSISTENCE (local + optional Firebase) ---------------- */
+let currentUser=null;
+function collectState(){
+  return {
+    streak: streakData,
+    badges: [...earnedBadges],
+    symptomLog: symptomLog.map(e=>({symptom:e.symptom, time:(e.time instanceof Date?e.time:new Date(e.time)).toISOString()})),
+    journalEntries: journalEntries.map(e=>({text:e.text, prompt:e.prompt, time:e.time.toISOString()})),
+    reframeEntries: reframeEntries.map(e=>({thought:e.thought, answer:e.answer, tags:e.tags, time:e.time.toISOString()})),
+    moodLog: moodLog.map(e=>({v:e.v, time:e.time.toISOString()})),
+  };
+}
+function applyState(s){
+  if(!s) return;
+  streakData = s.streak || streakData;
+  earnedBadges = new Set(s.badges||[]);
+  symptomLog = (s.symptomLog||[]).map(e=>({symptom:e.symptom, time:new Date(e.time)}));
+  journalEntries = (s.journalEntries||[]).map(e=>({text:e.text, prompt:e.prompt, time:new Date(e.time)}));
+  reframeEntries = (s.reframeEntries||[]).map(e=>({thought:e.thought, answer:e.answer, tags:e.tags||[], time:new Date(e.time)}));
+  moodLog = (s.moodLog||[]).map(e=>({v:e.v, time:new Date(e.time)}));
+  renderJournal(); renderReframe(); renderMoodChart(); renderStreak(); renderBadges(); renderPatterns();
+}
+function persist(){
+  try{ localStorage.setItem('steady_state_v1', JSON.stringify(collectState())); }catch(e){}
+  if(currentUser && window.steadyFirebaseReady && window.saveCloudState){
+    window.saveCloudState(currentUser.uid, collectState()).catch(e=>console.warn('Cloud save failed:', e));
+  }
+}
+function loadLocal(){
+  try{
+    const raw=localStorage.getItem('steady_state_v1');
+    if(raw) applyState(JSON.parse(raw));
+  }catch(e){}
+}
+loadLocal();
+
+/* ---------------- AUTH (Google sign-in) — mandatory gate ---------------- */
+let devBypass=false;
+
+function unlockApp(){
+  document.getElementById('authGate').style.display='none';
+  document.getElementById('appMain').style.display='block';
+}
+function lockApp(){
+  if(devBypass) return; // developer preview session — don't yank the app away mid-use
+  document.getElementById('authGate').style.display='flex';
+  document.getElementById('appMain').style.display='none';
+}
+function devBypassGate(){
+  devBypass=true;
+  unlockApp();
+}
+function updateGateConfigState(ready){
+  const notConfigured=document.getElementById('gateNotConfigured');
+  const signedOut=document.getElementById('gateSignedOut');
+  if(!notConfigured || !signedOut) return;
+  notConfigured.style.display = ready ? 'none' : 'block';
+  signedOut.style.display = ready ? 'block' : 'none';
+}
+window.updateGateConfigState = updateGateConfigState;
+
+// Wraps window.signInGoogle (defined by the Firebase module script) so the gate
+// can show a brief "opening Google…" state and recover cleanly if it's cancelled.
+function handleSignInClick(){
+  const signedOut=document.getElementById('gateSignedOut');
+  const signingIn=document.getElementById('gateSigningIn');
+  if(signedOut) signedOut.style.display='none';
+  if(signingIn) signingIn.style.display='block';
+  const result = window.signInGoogle ? window.signInGoogle() : Promise.resolve();
+  Promise.resolve(result).catch(()=>{}).finally(()=>{
+    if(!currentUser){
+      if(signingIn) signingIn.style.display='none';
+      if(signedOut) signedOut.style.display='block';
+    }
+  });
+}
+
+function renderAuthArea(){
+  const area=document.getElementById('authArea');
+  if(!area) return;
+  if(currentUser){
+    area.innerHTML = `<div class="auth-user">${currentUser.photoURL?`<img src="${currentUser.photoURL}" alt="">`:''}<span>${escapeHtml(currentUser.displayName||currentUser.email||'Signed in')}</span></div>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="signOutGoogle()">Sign out</button>`;
+  } else if(window.steadyFirebaseReady){
+    area.innerHTML = `<button type="button" class="btn btn-ghost btn-sm" onclick="handleSignInClick()">Sign in with Google</button>`;
+  } else {
+    area.innerHTML = `<span class="hint-text" style="margin:0;">Developer preview</span>`;
+  }
+}
+window.onSteadyAuthChange = async function(user){
+  currentUser = user;
+  renderAuthArea();
+  if(user){
+    unlockApp();
+    if(window.steadyFirebaseReady && window.loadCloudState){
+      try{
+        const cloud = await window.loadCloudState(user.uid);
+        if(cloud) applyState(cloud); else persist();
+      }catch(e){ console.warn('Cloud load failed:', e); }
+    }
+  } else {
+    lockApp();
+  }
+};
+renderAuthArea();
+renderBgmToggle();
+renderVoiceGenderUI();
+
+</script>
+</body>
+</html>
