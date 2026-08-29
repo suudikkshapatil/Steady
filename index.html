@@ -68,24 +68,50 @@
   nav{
     position:sticky;top:0;z-index:40;
     backdrop-filter:blur(10px);
-    background:rgba(228,222,210,0.82);
+    background:rgba(228,222,210,0.92);
     border-bottom:1px solid var(--line);
+    transition:transform .28s ease;
+    will-change:transform;
   }
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;gap:16px;}
-  .nav-right{display:flex;align-items:center;gap:10px;}
-  .icon-btn{background:var(--card-warm);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-size:0.78rem;font-weight:600;color:var(--ink);}
-  .icon-btn.on{background:var(--sage-deep);color:#fff;border-color:var(--sage-deep);}
-  .auth-area{display:flex;align-items:center;gap:8px;}
-  .auth-user{display:flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:600;}
-  .auth-user img{width:26px;height:26px;border-radius:50%;}
-  @media (max-width:720px){.nav-right{gap:6px;} .icon-btn{padding:8px 10px;font-size:0;} .icon-btn::before{content:'🔈';font-size:1rem;} .icon-btn.on::before{content:'🔊';}}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:1.2rem;}
-  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--sage);animation:pulse-dot 5.5s ease-in-out infinite;}
+  nav.nav-hidden{transform:translateY(-100%);}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;gap:12px;min-height:44px;}
+  .nav-right{display:flex;align-items:center;gap:8px;}
+  .icon-btn{
+    background:var(--card-warm);border:1.5px solid var(--line);border-radius:999px;
+    width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;padding:0;
+  }
+  .icon-btn svg{width:17px;height:17px;flex-shrink:0;stroke:var(--ink);}
+  .icon-btn.on{background:var(--sage-deep);border-color:var(--sage-deep);}
+  .icon-btn.on svg{stroke:#fff;}
+  .auth-area{display:flex;align-items:center;gap:8px;position:relative;}
+  .auth-btn{
+    width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line);
+    background:var(--sage);color:#fff;font-weight:700;font-size:0.85rem;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;overflow:hidden;
+  }
+  .auth-btn img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+  .auth-menu{
+    position:absolute;top:44px;right:0;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;box-shadow:var(--shadow);padding:10px;min-width:170px;
+    display:none;flex-direction:column;gap:6px;z-index:50;
+  }
+  .auth-menu.open{display:flex;}
+  .auth-menu .who{font-size:0.82rem;font-weight:600;color:var(--ink);padding:4px 6px;}
+  .brand{display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:1.05rem;flex-shrink:0;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--sage);animation:pulse-dot 5.5s ease-in-out infinite;}
   .navlinks{display:flex;gap:18px;font-size:0.86rem;font-weight:600;color:var(--ink-soft);overflow-x:auto;}
   .navlink{background:none;border:none;text-decoration:none;padding:6px 2px;border-bottom:2px solid transparent;transition:.2s;color:var(--ink-soft);font-size:0.86rem;font-weight:600;white-space:nowrap;}
   .navlink:hover{color:var(--ink);border-color:var(--sage);}
-  @media (max-width:720px){.navlinks{gap:14px;} .brand{display:none;}}
+  @media (max-width:720px){.navlinks{display:none;}}
 
+  .panic-fab{
+    position:fixed;top:14px;right:16px;z-index:45;
+    background:var(--rose);color:#fff;border:none;border-radius:999px;
+    padding:9px 16px;font-size:0.78rem;font-weight:700;box-shadow:var(--shadow-sm);
+  }
+  @media (max-width:720px){.panic-fab{padding:9px 12px;font-size:0.72rem;}}
+  
   /* ---------- Breathing companion orb (signature element) ---------- */
   /* ---------------- AUTH GATE ---------------- */
   #authGate{
@@ -357,7 +383,7 @@
 
 <div id="appMain" style="display:none;">
 
-<nav>
+<nav id="mainNav">
   <div class="wrap">
     <div class="brand"><span class="dot"></span> Steady</div>
     <div class="navlinks">
@@ -367,14 +393,19 @@
       <button type="button" class="navlink" onclick="goToSection('sounds-section')">Sounds</button>
     </div>
     <div class="nav-right">
-      <button type="button" class="icon-btn" id="voiceToggleBtn" onclick="toggleVoice()" title="Toggle spoken guidance">🔈 Voice</button>
-      <button type="button" class="icon-btn" id="bgmToggleBtn" onclick="toggleBgmQuick()" title="Toggle background music">🎵 Music</button>
+      <button type="button" class="icon-btn" id="voiceToggleBtn" onclick="toggleVoice()" title="Toggle spoken guidance" aria-label="Toggle spoken guidance">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path id="voiceWaveOn" d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" style="display:none"/></svg>
+      </button>
+      <button type="button" class="icon-btn" id="bgmToggleBtn" onclick="toggleBgmQuick()" title="Toggle background music" aria-label="Toggle background music">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </button>
       <div id="authArea" class="auth-area"></div>
-      <button type="button" class="btn btn-rose btn-sm" onclick="panicMode()">I need this to stop</button>
     </div>
   </div>
 </nav>
 
+<button type="button" class="panic-fab" onclick="panicMode()">I need this to stop</button>
+  
 <!-- Signature breathing companion, fixed -->
 <button type="button" id="companion" onclick="panicMode()" aria-label="Start a calming breath">
   <span>BREATHE<br>WITH ME</span>
@@ -811,12 +842,14 @@ function previewVoice(){
   speak("Hi, I'm here with you. This is what I sound like.", {force:true});
 }
 
-function renderVoiceToggle(){
+  function renderVoiceToggle(){
   const btn=document.getElementById('voiceToggleBtn');
   if(!btn) return;
   btn.classList.toggle('on', voiceEnabled);
-  btn.textContent = voiceEnabled ? '🔊 Voice' : '🔈 Voice';
+  const wave=document.getElementById('voiceWaveOn');
+  if(wave) wave.style.display = voiceEnabled ? '' : 'none';
 }
+  
 function toggleVoice(){
   voiceEnabled=!voiceEnabled;
   try{ localStorage.setItem('steady_voice', voiceEnabled?'1':'0'); }catch(e){}
@@ -1437,7 +1470,7 @@ function renderBgmToggle(){
   if(!btn) return;
   const on = currentSound!=='off';
   btn.classList.toggle('on', on);
-  btn.textContent = on ? '🎵 '+(SOUND_LABELS[currentSound]||'Music') : '🎵 Music';
+  btn.title = on ? 'Playing: '+(SOUND_LABELS[currentSound]||'Music')+' (tap to stop)' : 'Toggle background music';
   if(on){ try{ localStorage.setItem('steady_bgm_last', currentSound); }catch(e){} }
 }
 
@@ -1783,14 +1816,62 @@ function renderAuthArea(){
   const area=document.getElementById('authArea');
   if(!area) return;
   if(currentUser){
-    area.innerHTML = `<div class="auth-user">${currentUser.photoURL?`<img src="${currentUser.photoURL}" alt="">`:''}<span>${escapeHtml(currentUser.displayName||currentUser.email||'Signed in')}</span></div>
-      <button type="button" class="btn btn-ghost btn-sm" onclick="signOutGoogle()">Sign out</button>`;
+    const initial=(currentUser.displayName||currentUser.email||'?').trim().charAt(0).toUpperCase();
+    const avatarInner=currentUser.photoURL?`<img src="${currentUser.photoURL}" alt="">`:initial;
+    area.innerHTML=`
+      <button type="button" class="auth-btn" id="authMenuBtn" onclick="toggleAuthMenu()" aria-label="Account menu">${avatarInner}</button>
+      <div class="auth-menu" id="authMenu">
+        <div class="who">${escapeHtml(currentUser.displayName||currentUser.email||'Signed in')}</div>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="signOutGoogle()">Sign out</button>
+      </div>`;
   } else if(window.steadyFirebaseReady){
-    area.innerHTML = `<button type="button" class="btn btn-ghost btn-sm" onclick="handleSignInClick()">Sign in with Google</button>`;
+    area.innerHTML=`
+      <button type="button" class="auth-btn" id="authMenuBtn" onclick="toggleAuthMenu()" aria-label="Account menu" style="background:var(--card-warm);">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+      <div class="auth-menu" id="authMenu">
+        <button type="button" class="btn btn-primary btn-sm" onclick="handleSignInClick()">Sign in with Google</button>
+      </div>`;
   } else {
-    area.innerHTML = `<span class="hint-text" style="margin:0;">Developer preview</span>`;
+    area.innerHTML=`<span class="hint-text" style="margin:0;font-size:0.72rem;">Dev preview</span>`;
   }
 }
+function toggleAuthMenu(){
+  const m=document.getElementById('authMenu');
+  if(m) m.classList.toggle('open');
+}
+document.addEventListener('click', function(e){
+  const menu=document.getElementById('authMenu');
+  const btn=document.getElementById('authMenuBtn');
+  if(!menu || !menu.classList.contains('open')) return;
+  if(btn && (e.target===btn || btn.contains(e.target))) return;
+  if(!menu.contains(e.target)) menu.classList.remove('open');
+});
+
+(function(){
+  let lastY = window.scrollY || 0;
+  let ticking = false;
+  const nav = document.getElementById('mainNav');
+  function onScroll(){
+    const y = window.scrollY || 0;
+    if(nav){
+      if(y <= 40){
+        nav.classList.remove('nav-hidden');
+      } else if(y > lastY + 4){
+        nav.classList.add('nav-hidden');
+      } else if(y < lastY - 4){
+        nav.classList.remove('nav-hidden');
+        const menu=document.getElementById('authMenu');
+        if(menu) menu.classList.remove('open');
+      }
+    }
+    lastY = y;
+    ticking = false;
+  }
+  window.addEventListener('scroll', function(){
+    if(!ticking){ requestAnimationFrame(onScroll); ticking = true; }
+  }, { passive:true });
+})();
 window.onSteadyAuthChange = async function(user){
   currentUser = user;
   renderAuthArea();
