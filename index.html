@@ -317,6 +317,12 @@
   /* Movement */
   .move-list{display:grid;gap:10px;margin-bottom:20px;}
   .move-list li{list-style:none;background:var(--card-warm);border-radius:12px;padding:12px 16px;font-size:0.9rem;}
+    .move-list li.active{background:var(--sage-deep);color:#fff;font-weight:600;}
+  .move-ring{position:relative;width:150px;height:150px;border-radius:50%;margin:18px auto;
+    background:conic-gradient(var(--sage-deep) calc(var(--pct,100)*1%), var(--card-warm) 0);
+    display:flex;align-items:center;justify-content:center;transition:background .3s linear;}
+  .move-ring::before{content:'';position:absolute;inset:10px;border-radius:50%;background:var(--card);}
+  .move-ring span{position:relative;z-index:1;font-family:var(--font-display);font-size:2.2rem;color:var(--ink);}
   .timer-big{font-family:var(--font-display);font-size:2.6rem;text-align:center;margin:10px 0;}
 
   footer{padding:56px 0 90px;border-top:1px solid var(--line);}
@@ -419,7 +425,7 @@
     <div>
       <div class="eyebrow">A companion for anxious moments</div>
       <h1>Name what your body<br>is telling you. <em>Then answer it.</em></h1>
-      <p class="lede">Steady turns the old "Symptoms &amp; Solutions" worksheet into something you can actually use in the moment — pick what you're feeling, get matched techniques, and walk through them step by step, right here.</p>
+      <p class="lede">You don't have to knuckle through this alone. Tell Steady what you're feeling right now, and it'll walk you through exactly what helps — one calm step at a time.</p>
       <div class="hero-actions">
         <button type="button" class="btn btn-primary" onclick="goToSection('symptoms')">Find my symptoms</button>
         <button type="button" class="btn btn-ghost" onclick="goToSection('breathing')">Just breathe with me</button>
@@ -625,15 +631,18 @@
       <div class="eyebrow">Technique</div>
       <h3>Movement break</h3>
       <p class="panel-sub">Anxiety is energy with nowhere to go. A short burst of movement gives it somewhere to go.</p>
-      <ul class="move-list">
-        <li>🌀 Shake out your hands and arms for 15 seconds, like flicking off water</li>
-        <li>🚶 Walk to the farthest point you can reach in 30 seconds, then walk back</li>
-        <li>🙆 Reach both arms overhead, stretch tall, exhale as you drop them</li>
-        <li>🦶 Press your feet hard into the floor for 5 seconds, then release</li>
+            <ul class="move-list">
+        <li id="moveStep0">🌀 Shake out your hands and arms for 15 seconds, like flicking off water</li>
+        <li id="moveStep1">🚶 Walk to the farthest point you can reach in 30 seconds, then walk back</li>
+        <li id="moveStep2">🙆 Reach both arms overhead, stretch tall, exhale as you drop them</li>
+        <li id="moveStep3">🦶 Press your feet hard into the floor for 5 seconds, then release</li>
       </ul>
-      <div class="timer-big" id="moveTimer">0:60</div>
+      <div class="seq-display">
+        <div class="seq-phase" id="movePhaseLabel">Ready</div>
+        <div class="move-ring" id="moveRing" style="--pct:100;"><span id="moveTimer">--</span></div>
+      </div>
       <div class="seq-controls">
-        <button type="button" class="btn btn-primary btn-sm" id="moveToggle" onclick="toggleMoveTimer()">Start 60s timer</button>
+        <button type="button" class="btn btn-primary btn-sm" id="moveToggle" onclick="toggleMoveTimer()">Start</button>
         <button type="button" class="btn btn-ghost btn-sm" onclick="resetMoveTimer()">Reset</button>
       </div>
       <div class="next-row"><button type="button" class="linkbtn" onclick="goToSection('sounds-section')">Next: Calming sounds →</button></div>
@@ -1357,27 +1366,97 @@ const MOVE_STEPS=[
   "Reach both arms overhead, stretch tall, and exhale as you drop them.",
   "Press your feet hard into the floor for five seconds, then release."
 ];
-let move={secs:60, running:false, timer:null};
-function toggleMoveTimer(){
-  move.running=!move.running;
-  document.getElementById('moveToggle').textContent = move.running?'Pause':'Start 60s timer';
-  if(move.running){
-    if(move.secs===60) speak(MOVE_STEPS[0]);
-    move.timer=setInterval(tickMove,1000);
-  } else clearInterval(move.timer);
+const MOVE_SEQUENCE=[
+  {idx:0, text:"Shake out your hands and arms for fifteen seconds, like flicking off water.", secs:15},
+  {idx:1, text:"Walk to the farthest point you can reach in thirty seconds.", secs:30},
+  {idx:1, text:"Now walk back.", secs:30},
+  {idx:2, text:"Reach both arms overhead, stretch tall, and exhale as you drop them.", secs:15},
+  {idx:3, text:"Press your feet hard into the floor for five seconds.", secs:5},
+  {idx:3, text:"Now release, calmly.", secs:5},
+];
+let move={step:0, secsLeft:0, running:false, timer:null, mode:'idle'};
+let moveToken=0;
+
+function renderMoveList(){
+  const cur = MOVE_SEQUENCE[move.step] ? MOVE_SEQUENCE[move.step].idx : -1;
+  for(let i=0;i<4;i++){
+    const li=document.getElementById('moveStep'+i);
+    if(li) li.classList.toggle('active', i===cur);
+  }
+}
+function renderMove(){
+  renderMoveList();
+  const phaseEl=document.getElementById('movePhaseLabel');
+  const ring=document.getElementById('moveRing');
+  const timerEl=document.getElementById('moveTimer');
+  const step=MOVE_SEQUENCE[move.step];
+  if(!step) return;
+  if(phaseEl) phaseEl.textContent = move.mode==='narrating' ? 'Listen…' : 'Go';
+  if(timerEl) timerEl.textContent = move.mode==='narrating' ? '' : move.secsLeft;
+  if(ring){
+    const pct = move.mode==='counting' ? Math.round((move.secsLeft/step.secs)*100) : 100;
+    ring.style.setProperty('--pct', pct);
+  }
+}
+function enterMoveStep(){
+  clearInterval(move.timer);
+  const step=MOVE_SEQUENCE[move.step];
+  if(!step){ finishMove(); return; }
+  move.mode='narrating';
+  move.secsLeft=step.secs;
+  renderMove();
+  const myToken=++moveToken;
+  speak(step.text, { onend: ()=>{ if(myToken===moveToken) startMoveCountdown(); } });
+}
+function startMoveCountdown(){
+  if(move.mode==='counting') return;
+  move.mode='counting';
+  renderMove();
+  if(move.running) move.timer=setInterval(tickMove,1000);
 }
 function tickMove(){
-  move.secs--;
-  const elapsed = 60 - move.secs;
-  if(elapsed===15) speak(MOVE_STEPS[1]);
-  else if(elapsed===30) speak(MOVE_STEPS[2]);
-  else if(elapsed===45) speak(MOVE_STEPS[3]);
-  if(move.secs<=0){ clearInterval(move.timer); move.running=false; document.getElementById('moveToggle').textContent='Start 60s timer'; document.getElementById('moveTimer').textContent='🎉 Done'; awardBadge('mover'); registerCheckIn(); return; }
+  move.secsLeft--;
+  if(move.secsLeft<=0){
+    clearInterval(move.timer);
+    move.step++;
+    if(move.step>=MOVE_SEQUENCE.length){ finishMove(); return; }
+    enterMoveStep();
+    return;
+  }
   renderMove();
 }
-function renderMove(){ document.getElementById('moveTimer').textContent = '0:'+String(move.secs).padStart(2,'0'); }
-function resetMoveTimer(){ clearInterval(move.timer); move={secs:60,running:false,timer:null}; document.getElementById('moveToggle').textContent='Start 60s timer'; renderMove(); }
-  
+function finishMove(){
+  clearInterval(move.timer);
+  move.running=false; move.mode='idle';
+  document.getElementById('moveToggle').textContent='Start';
+  document.getElementById('movePhaseLabel').textContent='All done';
+  document.getElementById('moveTimer').textContent='🎉';
+  const ring=document.getElementById('moveRing'); if(ring) ring.style.setProperty('--pct',100);
+  renderMoveList();
+  awardBadge('mover'); registerCheckIn();
+}
+function toggleMoveTimer(){
+  move.running=!move.running;
+  document.getElementById('moveToggle').textContent = move.running?'Pause':'Start';
+  if(move.running){
+    if(move.mode==='idle') enterMoveStep();
+    else if(move.mode==='counting') move.timer=setInterval(tickMove,1000);
+  } else {
+    clearInterval(move.timer);
+  }
+}
+function resetMoveTimer(){
+  clearInterval(move.timer);
+  moveToken++;
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  move={step:0, secsLeft:0, running:false, timer:null, mode:'idle'};
+  document.getElementById('moveToggle').textContent='Start';
+  document.getElementById('movePhaseLabel').textContent='Ready';
+  document.getElementById('moveTimer').textContent='--';
+  const ring=document.getElementById('moveRing'); if(ring) ring.style.setProperty('--pct',100);
+  renderMoveList();
+}
+renderMoveList();
 /* ---------------- SOUNDS & BACKGROUND MUSIC (Web Audio, generated on the fly) ---------------- */
 function ensureAudio(){
   if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
