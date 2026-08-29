@@ -104,9 +104,9 @@
   .navlink{background:none;border:none;text-decoration:none;padding:6px 2px;border-bottom:2px solid transparent;transition:.2s;color:var(--ink-soft);font-size:0.86rem;font-weight:600;white-space:nowrap;}
   .navlink:hover{color:var(--ink);border-color:var(--sage);}
   @media (max-width:720px){.navlinks{display:none;}}
-
-  .panic-fab{
-    position:fixed;top:14px;right:16px;z-index:45;
+  
+    .panic-fab{
+    position:fixed;top:70px;right:16px;z-index:45;
     background:var(--rose);color:#fff;border:none;border-radius:999px;
     padding:9px 16px;font-size:0.78rem;font-weight:700;box-shadow:var(--shadow-sm);
   }
@@ -1351,21 +1351,33 @@ function deleteReframe(i){ reframeEntries.splice(i,1); renderReframe(); persist(
 
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
-/* ---------------- MOVEMENT TIMER ---------------- */
+const MOVE_STEPS=[
+  "Shake out your hands and arms for fifteen seconds, like flicking off water.",
+  "Walk to the farthest point you can reach in thirty seconds, then walk back.",
+  "Reach both arms overhead, stretch tall, and exhale as you drop them.",
+  "Press your feet hard into the floor for five seconds, then release."
+];
 let move={secs:60, running:false, timer:null};
 function toggleMoveTimer(){
   move.running=!move.running;
   document.getElementById('moveToggle').textContent = move.running?'Pause':'Start 60s timer';
-  if(move.running) move.timer=setInterval(tickMove,1000); else clearInterval(move.timer);
+  if(move.running){
+    if(move.secs===60) speak(MOVE_STEPS[0]);
+    move.timer=setInterval(tickMove,1000);
+  } else clearInterval(move.timer);
 }
 function tickMove(){
   move.secs--;
+  const elapsed = 60 - move.secs;
+  if(elapsed===15) speak(MOVE_STEPS[1]);
+  else if(elapsed===30) speak(MOVE_STEPS[2]);
+  else if(elapsed===45) speak(MOVE_STEPS[3]);
   if(move.secs<=0){ clearInterval(move.timer); move.running=false; document.getElementById('moveToggle').textContent='Start 60s timer'; document.getElementById('moveTimer').textContent='🎉 Done'; awardBadge('mover'); registerCheckIn(); return; }
   renderMove();
 }
 function renderMove(){ document.getElementById('moveTimer').textContent = '0:'+String(move.secs).padStart(2,'0'); }
 function resetMoveTimer(){ clearInterval(move.timer); move={secs:60,running:false,timer:null}; document.getElementById('moveToggle').textContent='Start 60s timer'; renderMove(); }
-
+  
 /* ---------------- SOUNDS & BACKGROUND MUSIC (Web Audio, generated on the fly) ---------------- */
 function ensureAudio(){
   if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
