@@ -67,7 +67,7 @@ sec('moretech',false,'<div class="eyebrow">More techniques</div><h3>Extra tools<
 let cur=null,si=0,vals={},sighT=null;
 $('#techTabs').innerHTML=TECH.map(x=>`<button type="button" class="pattern-btn" data-id="${x.id}">${x.i} ${x.t}</button>`).join('');
 $('#techTabs').onclick=e=>{const b=e.target.closest('button');if(b){cur=b.dataset.id;si=0;drawTech()}};
-function runSigh(){let n=0,ph=0;const P=[['Breathe in through your nose',2],['Sip in a little more',1],['Long, slow breath out through your mouth',6]];(function step(){const o=$('#sighOut');if(!o)return;if(n>=5){o.textContent='Done. Notice how your body feels.';return}o.textContent=P[ph][0];const d=P[ph][1];ph++;if(ph>=3){ph=0;n++}sighT=setTimeout(step,d*1000)})()}
+function runSigh(){let n=0,ph=0;const P=[['Breathe in through your nose',2],['Sip in a little more',1],['Long, slow breath out through your mouth',6]];(function step(){const o=$('#sighOut');if(!o)return;if(n>=5){o.textContent='Done. Notice how your body feels.';return}o.textContent=P[ph][0];speak(P[ph][0]);const d=P[ph][1];ph++;if(ph>=3){ph=0;n++}sighT=setTimeout(step,d*1000)})()}
 function drawTech(){
   clearTimeout(sighT);
   $$('#techTabs button').forEach(b=>b.classList.toggle('active',b.dataset.id===cur));
@@ -75,10 +75,11 @@ function drawTech(){
   if(!T){box.innerHTML='';return}
   if(si>=T.s.length){box.innerHTML='<div class="ground-title">🌿 Well done. Notice how you feel now compared to when you started.</div><button type="button" class="btn btn-ghost btn-sm" id="techAgain">Do it again</button>';$('#techAgain').onclick=()=>{si=0;drawTech()};return}
   const p=T.s[si],s=typeof p==='string'?{text:p}:p;
-  box.innerHTML=`<div class="ground-dots">${T.s.map((_,i)=>`<span class="${i<=si?'on':''}"></span>`).join('')}</div><div class="ground-title">${T.i} ${T.t} · ${si+1}/${T.s.length}</div><p style="max-width:560px">${s.text}</p>${s.html||''}${(s.inputs||[]).map((ph,k)=>`<input type="text" class="tin" data-k="${T.id}-${si}-${k}" aria-label="${esc(ph)}" placeholder="${esc(ph)}" value="${esc(vals[T.id+'-'+si+'-'+k]||'')}">`).join('')}${s.sigh?'<button type="button" class="btn btn-ghost btn-sm" id="sighGo">Start 5 rounds</button><div id="sighOut" class="phase-label" style="margin:10px 0"></div>':''}<div class="ground-nav" style="margin-top:14px"><button type="button" class="btn btn-ghost btn-sm" id="tBack">Back</button><button type="button" class="btn btn-primary btn-sm" id="tNext">${si===T.s.length-1?'Finish':'Next'}</button></div>`;
+  box.innerHTML=`<div class="ground-dots">${T.s.map((_,i)=>`<span class="${i<=si?'on':''}"></span>`).join('')}</div><div class="ground-title">${T.i} ${T.t} · ${si+1}/${T.s.length}</div><p style="max-width:560px">${s.text}</p>${s.html||''}${(s.inputs||[]).map((ph,k)=>`<input type="text" class="tin" data-k="${T.id}-${si}-${k}" aria-label="${esc(ph)}" placeholder="${esc(ph)}" value="${esc(vals[T.id+'-'+si+'-'+k]||'')}">`).join('')}${s.sigh?'<button type="button" class="btn btn-ghost btn-sm" id="sighGo">Start 5 rounds</button><div id="sighOut" class="phase-label" style="margin:10px 0"></div>':''}<div class="ground-nav" style="margin-top:14px"><button type="button" class="btn btn-ghost btn-sm" id="tBack">Back</button><button type="button" class="btn btn-ghost btn-sm" id="tSpeak">🔊 Read aloud</button><button type="button" class="btn btn-primary btn-sm" id="tNext">${si===T.s.length-1?'Finish':(s.inputs?'Save &amp; next':'Done')}</button></div>`;
   speak(s.text.replace(/<[^>]+>/g,''));
   $$('.tin').forEach(i=>i.oninput=()=>{vals[i.dataset.k]=i.value});
   if(s.sigh)$('#sighGo').onclick=runSigh;
+  $('#tSpeak').onclick=()=>speak(s.text.replace(/<[^>]+>/g,''),{force:true});
   $('#tBack').onclick=()=>{si=Math.max(0,si-1);drawTech()};
   $('#tNext').onclick=()=>{
     if(si===T.s.length-1){
@@ -91,6 +92,7 @@ function drawTech(){
   };
 }
 
+window.STEADY={TECH,open(id){cur=id;si=0;vals={};drawTech()}};
 /* ---------- Exposure ladder (9) ---------- */
 let ladder=[];try{ladder=JSON.parse(LS.g('steady_ladder','[]'))}catch(e){}
 function saveLadder(){LS.s('steady_ladder',JSON.stringify(ladder));persist()}
@@ -157,7 +159,7 @@ window.renderStreak=function(){const n=streakData.count,t=localDay(),h=$('#strea
   aff.textContent='✨ '+AFF[Math.floor(Date.now()/864e5)%AFF.length]};
 $$('.gender-btn').forEach(b=>b.classList.remove('sound-btn'));
 const _gs=groundStep,saved=$('#groundSteps').innerHTML;
-window.groundStep=function(d){_gs(d);const b=$('#groundNextBtn');if(b.textContent==='Restart')b.onclick=()=>{$('#groundSteps').innerHTML=saved;groundIdx=0;$$('.ground-dots span').forEach((e,i)=>e.classList.toggle('on',i===0));b.textContent='Next';b.onclick=()=>groundStep(1)}};
+window.groundStep=function(d){_gs(d);const b=$('#groundNextBtn');if(b.textContent==='Restart')b.onclick=()=>{$('#groundSteps').innerHTML=saved;groundIdx=0;$$('.ground-dots span').forEach((e,i)=>e.classList.toggle('on',i===0));b.textContent='Done';b.onclick=()=>groundStep(1)}};
 function entry(kind,i,meta,body){const d=document.createElement('div');d.className='entry';d.innerHTML=`<button type="button" class="del" aria-label="Delete" onclick="delete${kind}(${i})">✕</button><div class="meta">${meta}</div>${body}`;return d}
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:'medium',timeStyle:'short'});
 window.renderJournal=function(){const el=$('#journalEntries');el.innerHTML='';journalEntries.forEach((e,i)=>el.appendChild(entry('Journal',i,fmt(e.time)+' · '+esc(e.prompt),esc(e.text))))};
