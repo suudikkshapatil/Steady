@@ -32,6 +32,7 @@ const st=document.createElement('style');st.textContent=`
 .dr-link:hover{background:var(--card-warm)}
 .dr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-family:var(--font-display);font-size:1.2rem}
 .navlink.on{color:var(--ink);border-color:var(--sage-deep)}
+#symptoms{scroll-margin-top:64px}
 @media (max-width:520px){.fgrid{gap:10px}}
 `;document.head.appendChild(st);
 
@@ -39,19 +40,23 @@ const st=document.createElement('style');st.textContent=`
 const ORDER=['breathing','grounding','pmr','bodyscan','journal','reframe','movement','sounds',...TECH.map(t=>t.id),'ladder'];
 const META={};Object.entries(TECHNIQUES).forEach(([k,t])=>META[k]={i:t.icon,t:t.title});TECH.forEach(t=>META[t.id]={i:t.i,t:t.t});
 const SRC={breathing:'breathing',grounding:'grounding',pmr:'pmr',bodyscan:'bodyscan',journal:'journal',reframe:'reframe',movement:'movement',sounds:'sounds-section',ladder:'ladder'};
-const SUB={defuse:'Step back from a sticky thought so it loosens its grip.',worry:'Sort worries into "act on it" or "park it".',sigh:'The fastest breathing reset for sudden panic.',safe:'Visit a calm place in your mind.',good:'Shift attention to what went okay today.',kind:'Talk to yourself the way you would to a friend.',hug:'Gentle alternating taps to settle your body.',neck:'Release the places anxiety likes to hide.',stop:'A 30-second pause to name what you feel.',sleep:'Wind down so your mind can let go of the day.'};
+const SUB={defuse:'Step back from a sticky thought so it loosens its grip.',worry:'Sort worries into "act on it" or "park it".',sigh:'The fastest breathing reset for sudden panic.',safe:'Visit a calm place in your mind.',good:'Shift attention to what went okay today.',kind:'Talk to yourself the way you would to a friend.',hug:'Gentle alternating taps to settle your body.',neck:'Release the places anxiety likes to hide.',stop:'A 30-second pause to name what you feel.',sleep:'Wind down so your mind can let go of the day.',walk:'Slow, mindful steps that pull you out of your head.',nostril:'A calming yogic breath that balances and slows you.',wave:'Let urges and fear rise and fall without acting on them.',observe:'Rest your attention on one real object in front of you.',mantra:'A short kind phrase to steady you, breath by breath.',tiny:'Shrink a stuck task into one two-minute step.',bee:'A gentle hum that slows the breath and settles the body.'};
 
 /* ---------- Which feeling suggests which tools ---------- */
 const XT={'Trouble falling asleep':['sleep','safe'],'Racing or pounding heart':['sigh','hug'],'Racing, spiraling thoughts':['defuse','worry','stop'],'Tight chest / short of breath':['sigh'],'Muscle tension or aches':['neck','kind'],"Restless, can't sit still":['neck','hug'],'Trouble concentrating':['stop','worry'],'On edge / irritable':['stop','kind'],'Sweating or hot flashes':['sigh'],'Upset stomach / nausea':['hug','sigh'],'Avoiding people or places':['ladder','kind','defuse'],'Sudden panic or dread':['sigh','hug','safe'],'Stuck on the same worry':['worry','defuse'],'Tired but wired':['sleep','neck','good'],'Feeling detached / unreal':['stop','hug'],'Worrying about the future':['worry','good','defuse']};
+
+const NEWSYM={'Trembling or shaking':['sigh','pmr','grounding'],'Dizzy or lightheaded':['breathing','grounding','observe'],'Headache or tight head':['neck','pmr','nostril'],'Numbness or tingling':['breathing','grounding','bee'],'Dry mouth or lump in throat':['sigh','bee','neck'],'Chest pain or pressure (new or severe? see a doctor)':['breathing','sigh','grounding'],'Fatigue or exhaustion':['walk','bodyscan','kind'],'Stomach cramps or frequent toilet trips':['hug','breathing','bodyscan'],'Clenching jaw or grinding teeth':['neck','pmr','bee'],'Easily startled or jumpy':['grounding','observe','sigh'],'Mind going blank':['grounding','observe','stop'],'Intrusive or unwanted thoughts':['defuse','wave','observe'],'Imagining the worst':['reframe','defuse','worry'],'Replaying the past':['defuse','worry','walk'],"Can't make decisions":['worry','stop','tiny'],'Fear of losing control or dying':['sigh','grounding','mantra','safe'],'Perfectionism or fear of mistakes':['kind','reframe','mantra'],'Constant health worries':['worry','reframe','stop'],'Overwhelmed':['stop','tiny','sigh','kind'],'Tearful or about to cry':['hug','kind','bee'],'Sense of doom':['mantra','grounding','sigh'],'Low mood or hopeless':['tiny','walk','good','kind'],'Guilt or harsh self-criticism':['kind','reframe','mantra'],'Lonely or isolated':['kind','good','tiny'],'Procrastinating or frozen':['tiny','stop','wave'],'Needing constant reassurance':['wave','defuse','worry'],'Nail-biting, fidgeting or pacing':['movement','hug','neck'],'Withdrawing from friends':['ladder','tiny','kind'],'Over-checking or over-preparing':['worry','wave','reframe'],'Waking at night anxious':['sleep','bodyscan','bee'],'Nightmares or night-time panic':['sigh','safe','grounding'],'Fear of speaking up or being judged':['reframe','ladder','mantra','sigh'],'Blushing or sweating around people':['sigh','mantra','reframe'],'Exam or performance nerves':['nostril','sigh','mantra','stop'],'Panic in crowds, travel or enclosed spaces':['sigh','grounding','ladder'],'Jittery after caffeine or skipped meals':['walk','sigh','nostril']};
+Object.entries(NEWSYM).forEach(([n,t])=>{SYMPTOMS.push({name:n,tags:[]});XT[n]=t});
+Object.entries({'Racing or pounding heart':['bee','nostril'],'Trouble concentrating':['observe'],"Restless, can't sit still":['walk'],'Tired but wired':['walk','bee'],'Worrying about the future':['mantra'],'Sudden panic or dread':['mantra'],'Feeling detached / unreal':['observe'],'On edge / irritable':['nostril']}).forEach(([n,t])=>XT[n]=(XT[n]||[]).concat(t));
 SYMPTOMS.forEach(s=>(XT[s.name]||[]).forEach(k=>{if(!s.tags.includes(k))s.tags.push(k)}));
 const SY=SYMPTOMS.map(s=>s.name);
 const matched=()=>{const m=new Set();selectedSymptoms.forEach(i=>SYMPTOMS[i].tags.forEach(t=>{if(ORDER.includes(t))m.add(t)}));return m};
 
 /* ---------- Views ---------- */
 function pauseAll(){try{if(breathing.running)toggleBreathing();if(pmr.running)togglePmr();if(scan.running)toggleScan();if(move.running)toggleMoveTimer()}catch(e){}if(window.speechSynthesis)speechSynthesis.cancel()}
-function showView(v){pauseAll();$$('[data-view]').forEach(e=>e.style.display=e.dataset.view.split(' ').includes(v)?'':'none');$$('.navlink[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));closeDrawer();window.scrollTo({top:0,behavior:'smooth'})}
-[['.hero','home'],['#streaks','home'],['#symptoms','home'],['#tracker','mood'],['#patterns','patterns'],['#crisis','crisis'],['#settings','settings']].forEach(([s,v])=>{const e=$(s);if(e)e.dataset.view=v});
-$('#settings h3').textContent='Customize & privacy';
+let curView='home';function showView(v,keep){pauseAll();curView=v;$$('[data-view]').forEach(e=>e.style.display=e.dataset.view.split(' ').includes(v)?'':'none');$$('.navlink[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));closeDrawer();if(!keep)window.scrollTo({top:0,behavior:'smooth'});window.STEADY&&STEADY.onView&&STEADY.onView(v)}
+[['.hero','home'],['#streaks','patterns'],['#symptoms','home'],['#tracker','mood'],['#patterns','patterns'],['#crisis','crisis'],['#settings','settings']].forEach(([s,v])=>{const e=$(s);if(e)e.dataset.view=v});
+$('#settings h3').textContent='Customize & privacy';$('#patterns').after($('#streaks'));
 
 /* ---------- Toolkit stage: horizontal slides ---------- */
 const stage=document.createElement('section');stage.id='stage';stage.dataset.view='toolkit';
@@ -69,10 +74,14 @@ $('#groundNextBtn').textContent='Done';
 const _g=groundStep;window.groundStep=function(d){_g(d);const t=$('.ground-step.active .ground-title')||$('#groundSteps .ground-title');if(t)speak(t.textContent)};
 
 let curKey=null,onlyMine=false;
-const vis=()=>{const m=matched();return onlyMine&&m.size?ORDER.filter(k=>m.has(k)):ORDER};
+let ctxTools=null,sortMode='default';
+const vis=()=>{const m=matched();let l=ctxTools?ctxTools.slice():(onlyMine&&m.size?ORDER.filter(k=>m.has(k)):ORDER.slice());const st=(STEADY.stats&&STEADY.stats())||{},g=k=>st[k]||{},sc=k=>{let n=0;selectedSymptoms.forEach(i=>{if(SYMPTOMS[i].tags.includes(k))n++});return n};
+if(sortMode==='az')l.sort((a,b)=>META[a].t.localeCompare(META[b].t));else if(sortMode==='sug')l.sort((a,b)=>sc(b)-sc(a)||ORDER.indexOf(a)-ORDER.indexOf(b));else if(sortMode==='best')l.sort((a,b)=>(g(b).avg||0)-(g(a).avg||0)||(g(b).uses||0)-(g(a).uses||0));else if(sortMode==='used')l.sort((a,b)=>(g(b).uses||0)-(g(a).uses||0));
+return l};
+const guard=fn=>{if(curView==='toolkit'&&curKey&&STEADY.beforeLeave)STEADY.beforeLeave(fn);else fn()};
 function nb(d){const v=vis(),i=v.indexOf(curKey);if(i>=0)return v[i+d];const c=ORDER.indexOf(curKey);return d>0?v.find(k=>ORDER.indexOf(k)>c):[...v].reverse().find(k=>ORDER.indexOf(k)<c)}
-function step(d){const k=nb(d);if(k)openSlide(k,d);else if(d>0)goToSection('tracker')}
-function updateNav(){const s=$('.slide.on');if(!s)return;s.querySelector('[data-nav="1"]').textContent=nb(1)?'Next technique ›':'Check my mood ›';s.querySelector('[data-nav="-1"]').disabled=!nb(-1)}
+function step(d){const k=nb(d);if(k)guard(()=>openSlide(k,d));else if(d>0)(STEADY.finish?STEADY.finish():goToSection('tracker'))}
+function updateNav(){const s=$('.slide.on');if(!s)return;s.querySelector('[data-nav="1"]').textContent=nb(1)?'Next technique ›':'Finish toolkit ✓';s.querySelector('[data-nav="-1"]').disabled=!nb(-1)}
 function drawBar(){
   const m=matched(),v=vis();
   $('#tkBar').innerHTML=v.map(k=>`<button type="button" role="tab" class="tk-chip${k===curKey?' on':''}${m.has(k)?' fy':''}" data-k="${k}">${META[k].i} ${META[k].t}</button>`).join('');
@@ -85,29 +94,32 @@ function openSlide(k,dir){
   curKey=k;showView('toolkit');
   $$('.slide').forEach(s=>{const on=s.dataset.key===k;s.classList.toggle('on',on);if(on)s.style.setProperty('--dir',d)});
   if(!SRC[k]){$('.slide.on .tb-slot').appendChild($('#techBox'));STEADY.open(k)}
-  drawBar();updateNav();
+  drawBar();updateNav();STEADY.onOpen&&STEADY.onOpen(k);
 }
-$('#tkBar').onclick=e=>{const b=e.target.closest('.tk-chip');if(b)openSlide(b.dataset.k)};
+$('#tkBar').onclick=e=>{const b=e.target.closest('.tk-chip');if(b&&b.dataset.k!==curKey)guard(()=>openSlide(b.dataset.k))};
 $('#tkFilter').onchange=e=>{onlyMine=e.target.checked;drawBar();updateNav()};
 $('#track').onclick=e=>{const b=e.target.closest('[data-nav]');if(b)step(+b.dataset.nav)};
 let tx=0,ty=0;
 $('#track').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
 $('#track').addEventListener('touchend',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)*2)step(dx<0?1:-1)},{passive:true});
 
-const VMAP={symptoms:'home',streaks:'home',tracker:'mood',patterns:'patterns',crisis:'crisis',settings:'settings'};
+const VMAP={symptoms:'home',streaks:'home',tracker:'mood',patterns:'patterns',crisis:'crisis',settings:'settings',mytk:'mytk'};
 window.goToSection=function(id){
   if(id==='sounds-section')id='sounds';
-  if(id==='toolkit')return openSlide(curKey||vis()[0]);
-  if(ORDER.includes(id))return openSlide(id);
-  showView(VMAP[id]||'home');
+  if(id==='toolkit')return curView==='toolkit'?0:openSlide(curKey||vis()[0]);
+  if(ORDER.includes(id))return id===curKey&&curView==='toolkit'?0:guard(()=>openSlide(id));
+  if(id==='symptoms')return guard(()=>{showView('home',true);setTimeout(()=>{const e=$('#symptoms');e&&e.scrollIntoView({behavior:'smooth',block:'start'})},90)});
+  guard(()=>showView(VMAP[id]||'home'));
 };
 
 /* ---------- Feeling finder (guided Q&A or simple picker) ---------- */
 const TREE=[
-{l:'In my body',i:'🫀',c:[{l:'Heart or breathing',i:'💓',c:['Racing or pounding heart','Tight chest / short of breath','Sudden panic or dread']},{l:'Muscles & tension',i:'💪',c:['Muscle tension or aches','On edge / irritable']},{l:'Stomach & heat',i:'🌡️',c:['Upset stomach / nausea','Sweating or hot flashes']},{l:'Restless energy',i:'⚡',c:["Restless, can't sit still",'Tired but wired']}]},
-{l:'In my mind',i:'🧠',c:[{l:'Spiralling thoughts',i:'🌀',c:['Racing, spiraling thoughts','Stuck on the same worry']},{l:'Worry about what is ahead',i:'🔮',c:['Worrying about the future','Avoiding people or places']},{l:'Foggy or unreal',i:'🌫️',c:['Trouble concentrating','Feeling detached / unreal']}]},
-{l:'Sleep & energy',i:'🌙',c:[{l:'At bedtime',i:'🛌',c:['Trouble falling asleep','Racing, spiraling thoughts']},{l:'Wired and tired',i:'🔋',c:['Tired but wired',"Restless, can't sit still"]}]},
-{l:'People & big moments',i:'🧍',c:[{l:'Avoiding things',i:'🚪',c:['Avoiding people or places','Worrying about the future']},{l:'Sudden overwhelm',i:'🌊',c:['Sudden panic or dread','Feeling detached / unreal']},{l:'On edge around others',i:'👥',c:['On edge / irritable','Trouble concentrating']}]},
+{l:'In my body',i:'🫀',c:[{l:'Heart, chest & breathing',i:'💓',c:['Racing or pounding heart','Tight chest / short of breath','Chest pain or pressure (new or severe? see a doctor)','Dizzy or lightheaded','Sudden panic or dread']},{l:'Shaky, numb or hot',i:'🌡️',c:['Trembling or shaking','Numbness or tingling','Sweating or hot flashes','Dry mouth or lump in throat','Easily startled or jumpy']},{l:'Muscles, head & jaw',i:'💪',c:['Muscle tension or aches','Headache or tight head','Clenching jaw or grinding teeth','On edge / irritable']},{l:'Stomach & gut',i:'🫃',c:['Upset stomach / nausea','Stomach cramps or frequent toilet trips']},{l:'Energy',i:'⚡',c:["Restless, can't sit still",'Tired but wired','Fatigue or exhaustion','Jittery after caffeine or skipped meals']}]},
+{l:'In my mind',i:'🧠',c:[{l:'Spiralling thoughts',i:'🌀',c:['Racing, spiraling thoughts','Stuck on the same worry','Replaying the past','Intrusive or unwanted thoughts']},{l:'Fear of what is ahead',i:'🔮',c:['Worrying about the future','Imagining the worst','Constant health worries','Fear of losing control or dying']},{l:'Foggy or stuck',i:'🌫️',c:['Trouble concentrating','Mind going blank',"Can't make decisions",'Feeling detached / unreal']}]},
+{l:'My feelings',i:'💛',c:[{l:'Heavy or overwhelmed',i:'🌊',c:['Overwhelmed','Sense of doom','Tearful or about to cry','Low mood or hopeless']},{l:'Hard on myself',i:'🪞',c:['Guilt or harsh self-criticism','Perfectionism or fear of mistakes','Lonely or isolated']}]},
+{l:'Sleep',i:'🌙',c:[{l:'At bedtime',i:'🛌',c:['Trouble falling asleep','Racing, spiraling thoughts']},{l:'In the night',i:'🌌',c:['Waking at night anxious','Nightmares or night-time panic']}]},
+{l:'People & situations',i:'🧍',c:[{l:'Around others',i:'👥',c:['Fear of speaking up or being judged','Blushing or sweating around people','Panic in crowds, travel or enclosed spaces']},{l:'Exams & big moments',i:'📝',c:['Exam or performance nerves','Worrying about the future']}]},
+{l:'What I am doing',i:'🚪',c:[{l:'Avoiding or withdrawing',i:'🙈',c:['Avoiding people or places','Withdrawing from friends','Procrastinating or frozen']},{l:'Checking & seeking',i:'🔁',c:['Needing constant reassurance','Over-checking or over-preparing','Nail-biting, fidgeting or pacing']}]},
 ];
 const FW=$('#symptoms .wrap');
 FW.innerHTML='<span id="selectedCount" hidden></span><div class="section-head"><div class="eyebrow">Step one</div><h2>What are you noticing right now?</h2><p class="lede">No long list to read. Choose how you want to find it.</p></div><div class="breathe-row" id="fMode"><button type="button" class="pattern-btn" data-m="guide">🧭 Help me find it</button><button type="button" class="pattern-btn" data-m="pick">👆 I know what I feel</button></div><div id="fBody"></div><div id="fSel"></div>';
@@ -134,11 +146,11 @@ FW.onclick=e=>{const c=s=>e.target.closest(s);let b;
   else if(c('#fBack')){path.pop();drawFinder()}
   else if(b=c('[data-rm]'))toggleSym(+b.dataset.rm);
   else if(b=c('[data-go]')){onlyMine=false;openSlide(b.dataset.go)}
-  else if(c('#fOpen')){onlyMine=true;const f=ORDER.find(k=>matched().has(k));if(f)openSlide(f)}
+  else if(c('#fOpen')){onlyMine=true;ctxTools=null;sortMode='sug';const v=vis();if(v[0]){STEADY.start&&STEADY.start('suggested','Suggested toolkit',v);openSlide(v[0])}}
   else if(c('#fClear')){selectedSymptoms.clear();drawFinder();drawBar()}};
 
 /* ---------- Sidebar + top bar ---------- */
-const LINKS=[['🧭','Find my feeling','symptoms'],['🧰','Toolkit','toolkit'],['📊','Mood tracker','tracker'],['📈','My patterns','patterns'],['🎧','Calming sounds','sounds-section'],['🆘','Get help now','crisis'],['⚙️','Customize','settings']];
+const LINKS=[['🧭','Find my feeling','symptoms'],['🧰','Toolkit','toolkit'],['🧩','My toolkits','mytk'],['📊','Mood tracker','tracker'],['📈','My patterns','patterns'],['🎧','Calming sounds','sounds-section'],['🆘','Get help now','crisis'],['⚙️','Customize','settings']];
 const dr=document.createElement('aside');dr.id='drawer';dr.setAttribute('aria-label','Menu');
 dr.innerHTML=`<div class="dr-head"><span>Steady</span><button type="button" class="icon-btn" id="drClose" aria-label="Close menu">✕</button></div>${LINKS.map(([i,t,g])=>`<button type="button" class="dr-link" data-g="${g}"><span>${i}</span>${t}</button>`).join('')}<hr style="width:100%;border:0;border-top:1px dashed var(--line)"><button type="button" class="dr-link" id="drOut"><span>↩</span>Sign out</button>`;
 const sc=document.createElement('div');sc.id='scrim';
@@ -152,6 +164,8 @@ const hb=document.createElement('button');hb.type='button';hb.className='icon-bt
 $$('.navlink').forEach(b=>{const m={Symptoms:'home',Toolkit:'toolkit',Mood:'mood','Help now':'crisis'}[b.textContent.trim()];if(m)b.dataset.v=m});
 const cz=document.createElement('button');cz.type='button';cz.className='navlink';cz.dataset.v='settings';cz.textContent='Customize';cz.onclick=()=>goToSection('settings');$('.navlinks').appendChild(cz);
 
+/* ---------- API for steady-insights.js ---------- */
+STEADY.L={view:()=>curView,symptoms:()=>[...selectedSymptoms].map(i=>SY[i]),META,ORDER,blurb:k=>(TECHNIQUES[k]&&TECHNIQUES[k].blurb)||SUB[k]||'',setCtx:t=>{ctxTools=t;if(t)onlyMine=false},setSort:m=>{sortMode=m},sort:()=>sortMode,open:openSlide,showView,refresh:()=>{drawBar();updateNav()}};
 /* ---------- Start ---------- */
 drawFinder();drawBar();showView('home');
 })();
